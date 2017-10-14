@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4E482639-E1F6-492F-B220-3A874431C429}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+      <ParseFiles>true</ParseFiles>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{8A666885-5940-4B53-AA7F-30314E50474E}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+      <ParseFiles>true</ParseFiles>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MAIN.cpp" />
+    <ClCompile Include="MainApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="textures_effect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="textures_view.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="getopt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="getopt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="textures_effect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="textures_view.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

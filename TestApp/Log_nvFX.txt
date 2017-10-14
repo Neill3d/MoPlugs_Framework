@@ -1,0 +1,5 @@
+Delete CstBuffer transfBlock1 and remove it from repository
+Delete CstBuffer transfBlock2 and remove it from repository
+Delete CstBuffer frustumBlock and remove it from repository
+Delete CstBuffer cubeMapBlock and remove it from repository
+Delete CstBuffer lightBlock and remove it from repository
