@@ -1,0 +1,17 @@
+﻿Build started 26.10.2015 16:38:53.
+     1>Project "D:\Work\MOPLUGS\SceneGraph_Shared\projects\sg_base.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\sg_base.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         All outputs are up-to-date.
+       Lib:
+         All outputs are up-to-date.
+         sg_base.vcxproj -> D:\Work\MOPLUGS\SceneGraph_Shared\projects\..\lib\sg_base_Win32_Debug.lib
+       FinalizeBuildStatus:
+         Deleting file "Debug\sg_base.unsuccessfulbuild".
+         Touching "Debug\sg_base.lastbuildstate".
+     1>Done Building Project "D:\Work\MOPLUGS\SceneGraph_Shared\projects\sg_base.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.14

@@ -1,0 +1,66 @@
+﻿Build started 26.10.2015 16:58:04.
+     1>Project "D:\Work\MOPLUGS\SceneGraph_Shared\projects\sg_base.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Release\sg_base.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _LIB /D TIXML_USE_STL /D GLEW_STATIC /D NOMINMAX /D GLM_FORCE_RADIANS /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\code\algorithm\kdtree_common.cc ..\code\algorithm\math3d.cpp ..\code\algorithm\nv_math.cpp ..\code\graphics\Assert.cpp ..\code\graphics\CheckGLError.cpp ..\code\graphics\checks.cpp ..\code\graphics\fpTexture.cpp ..\code\graphics\Framebuffer.cpp ..\code\graphics\glewContext.cpp ..\code\graphics\glslShader.cpp ..\code\graphics\OGL_Utils.cpp ..\code\graphics\UniformBuffer.cpp ..\code\graphics\WGLFONT.cpp ..\code\IO\tga.cpp ..\code\IO\tinystr.cpp ..\code\IO\tinyxml.cpp ..\code\IO\tinyxmlerror.cpp ..\code\IO\tinyxmlparser.cpp ..\code\TextUtils.cpp
+         kdtree_common.cc
+         math3d.cpp
+         nv_math.cpp
+         Assert.cpp
+         CheckGLError.cpp
+         checks.cpp
+         fpTexture.cpp
+         Framebuffer.cpp
+         glewContext.cpp
+         glslShader.cpp
+         OGL_Utils.cpp
+     1>..\code\graphics\OGL_Utils.cpp(31): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>..\code\graphics\OGL_Utils.cpp(36): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>..\code\graphics\OGL_Utils.cpp(86): warning C4244: 'argument' : conversion from 'const double' to 'GLsizei', possible loss of data
+     1>..\code\graphics\OGL_Utils.cpp(86): warning C4244: 'argument' : conversion from 'const double' to 'GLsizei', possible loss of data
+     1>..\code\graphics\OGL_Utils.cpp(141): warning C4244: 'argument' : conversion from 'const double' to 'GLsizei', possible loss of data
+     1>..\code\graphics\OGL_Utils.cpp(141): warning C4244: 'argument' : conversion from 'const double' to 'GLsizei', possible loss of data
+         UniformBuffer.cpp
+         WGLFONT.cpp
+         tga.cpp
+     1>..\code\IO\tga.cpp(84): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(234) : see declaration of 'fopen'
+     1>..\code\IO\tga.cpp(218): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(234) : see declaration of 'fopen'
+     1>..\code\IO\tga.cpp(280): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371) : see declaration of 'sprintf'
+         tinystr.cpp
+         tinyxml.cpp
+         tinyxmlerror.cpp
+         tinyxmlparser.cpp
+         TextUtils.cpp
+       Lib:
+         d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\Lib.exe /OUT:"..\lib\sg_base_Win32_Release.lib" /NOLOGO /LTCG Release\kdtree_common.obj
+         Release\math3d.obj
+         Release\nv_math.obj
+         Release\Assert.obj
+         Release\CheckGLError.obj
+         Release\checks.obj
+         Release\fpTexture.obj
+         Release\Framebuffer.obj
+         Release\glewContext.obj
+         Release\glslShader.obj
+         Release\OGL_Utils.obj
+         Release\UniformBuffer.obj
+         Release\WGLFONT.obj
+         Release\tga.obj
+         Release\tinystr.obj
+         Release\tinyxml.obj
+         Release\tinyxmlerror.obj
+         Release\tinyxmlparser.obj
+         Release\TextUtils.obj
+         sg_base.vcxproj -> D:\Work\MOPLUGS\SceneGraph_Shared\projects\..\lib\sg_base_Win32_Release.lib
+       FinalizeBuildStatus:
+         Deleting file "Release\sg_base.unsuccessfulbuild".
+         Touching "Release\sg_base.lastbuildstate".
+     1>Done Building Project "D:\Work\MOPLUGS\SceneGraph_Shared\projects\sg_base.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.84

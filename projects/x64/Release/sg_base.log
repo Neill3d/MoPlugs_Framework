@@ -1,0 +1,79 @@
+﻿Build started 19.08.2017 18:29:51.
+     1>Project "D:\Work\MOPLUGS\SceneGraph_Shared\projects\sg_base.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "x64\Release\sg_base.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /GL /D GLM_FORCE_SSE4 /D _WIN32 /D WIN32 /D NDEBUG /D _LIB /D TIXML_USE_STL /D GLEW_STATIC /D NOMINMAX /D GLM_FORCE_RADIANS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc100.pdb" /Gd /TP /errorReport:prompt "..\..\nvFX-master\nvFX-master\samples\shared\nvImage\nvImage.cpp" "..\..\nvFX-master\nvFX-master\samples\shared\nvImage\nvImageDDS.cpp" "..\..\nvFX-master\nvFX-master\samples\shared\nv_dds\nv_dds.cpp" ..\code\algorithm\kdtree_common.cc ..\code\algorithm\math3d.cpp ..\code\algorithm\nv_math.cpp ..\code\graphics\Assert.cpp ..\code\graphics\CheckGLError.cpp ..\code\graphics\checks.cpp ..\code\graphics\fpTexture.cpp ..\code\graphics\Framebuffer.cpp ..\code\graphics\glewContext.cpp ..\code\graphics\glslShader.cpp ..\code\graphics\OGL_Utils.cpp ..\code\graphics\UniformBuffer.cpp ..\code\graphics\WGLFONT.cpp ..\code\IO\tga.cpp ..\code\IO\tinystr.cpp ..\code\IO\tinyxml.cpp ..\code\IO\tinyxmlerror.cpp ..\code\IO\tinyxmlparser.cpp ..\code\TextUtils.cpp
+         nvImage.cpp
+         nvImageDDS.cpp
+     1>..\..\nvFX-master\nvFX-master\samples\shared\nvImage\nvImageDDS.cpp(695): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(234) : see declaration of 'fopen'
+         nv_dds.cpp
+     1>..\..\nvFX-master\nvFX-master\samples\shared\nv_dds\nv_dds.cpp(513): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(234) : see declaration of 'fopen'
+     1>..\..\nvFX-master\nvFX-master\samples\shared\nv_dds\nv_dds.cpp(793): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(234) : see declaration of 'fopen'
+         kdtree_common.cc
+         math3d.cpp
+         nv_math.cpp
+         Assert.cpp
+         CheckGLError.cpp
+         checks.cpp
+         fpTexture.cpp
+         Framebuffer.cpp
+         glewContext.cpp
+         glslShader.cpp
+         OGL_Utils.cpp
+     1>..\code\graphics\OGL_Utils.cpp(31): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>..\code\graphics\OGL_Utils.cpp(36): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+     1>..\code\graphics\OGL_Utils.cpp(86): warning C4244: 'argument' : conversion from 'const double' to 'GLsizei', possible loss of data
+     1>..\code\graphics\OGL_Utils.cpp(86): warning C4244: 'argument' : conversion from 'const double' to 'GLsizei', possible loss of data
+     1>..\code\graphics\OGL_Utils.cpp(188): warning C4244: 'argument' : conversion from 'const double' to 'GLsizei', possible loss of data
+     1>..\code\graphics\OGL_Utils.cpp(188): warning C4244: 'argument' : conversion from 'const double' to 'GLsizei', possible loss of data
+         UniformBuffer.cpp
+         WGLFONT.cpp
+         tga.cpp
+     1>..\code\IO\tga.cpp(84): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(234) : see declaration of 'fopen'
+     1>..\code\IO\tga.cpp(218): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(234) : see declaration of 'fopen'
+     1>..\code\IO\tga.cpp(280): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\include\stdio.h(371) : see declaration of 'sprintf'
+         tinystr.cpp
+         tinyxml.cpp
+         tinyxmlerror.cpp
+         Compiling...
+         tinyxmlparser.cpp
+         TextUtils.cpp
+       Lib:
+         d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\Lib.exe /OUT:"..\lib\sg_base_x64_Release.lib" /NOLOGO /LTCG x64\Release\nvImage.obj
+         x64\Release\nvImageDDS.obj
+         x64\Release\nv_dds.obj
+         x64\Release\kdtree_common.obj
+         x64\Release\math3d.obj
+         x64\Release\nv_math.obj
+         x64\Release\Assert.obj
+         x64\Release\CheckGLError.obj
+         x64\Release\checks.obj
+         x64\Release\fpTexture.obj
+         x64\Release\Framebuffer.obj
+         x64\Release\glewContext.obj
+         x64\Release\glslShader.obj
+         x64\Release\OGL_Utils.obj
+         x64\Release\UniformBuffer.obj
+         x64\Release\WGLFONT.obj
+         x64\Release\tga.obj
+         x64\Release\tinystr.obj
+         x64\Release\tinyxml.obj
+         x64\Release\tinyxmlerror.obj
+         x64\Release\tinyxmlparser.obj
+         x64\Release\TextUtils.obj
+         sg_base.vcxproj -> D:\Work\MOPLUGS\SceneGraph_Shared\projects\..\lib\sg_base_x64_Release.lib
+       FinalizeBuildStatus:
+         Deleting file "x64\Release\sg_base.unsuccessfulbuild".
+         Touching "x64\Release\sg_base.lastbuildstate".
+     1>Done Building Project "D:\Work\MOPLUGS\SceneGraph_Shared\projects\sg_base.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:06.68

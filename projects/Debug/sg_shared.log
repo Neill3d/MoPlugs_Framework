@@ -1,0 +1,44 @@
+﻿Build started 26.10.2015 16:22:16.
+     1>Project "D:\Work\MOPLUGS\SceneGraph_Shared\projects\sg_shared.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\sg_shared.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _WIN32 /D WIN32 /D _DEBUG /D _LIB /D TIXML_USE_STL /D GLEW_STATIC /D NOMINMAX /D GLM_FORCE_RADIANS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ..\code\gpucache_loader.cpp ..\code\gpucache_visitor.cpp
+         gpucache_visitor.cpp
+         gpucache_loader.cpp
+     1>d:\work\moplugs\scenegraph_shared\code\gpucache_loader.cpp(210): warning C4996: '_open': This function or variable may be unsafe. Consider using _sopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 d:\program files (x86)\microsoft visual studio 10.0\vc\include\io.h(240) : see declaration of '_open'
+     1>d:\work\moplugs\scenegraph_shared\code\gpucache_loader.cpp(218): warning C4244: 'initializing' : conversion from '__int64' to 'size_t', possible loss of data
+     1>d:\work\moplugs\scenegraph_shared\code\gpucache_loader.cpp(256): warning C4244: '=' : conversion from '__int64' to 'size_t', possible loss of data
+     1>d:\work\moplugs\scenegraph_shared\code\gpucache_loader.cpp(332): warning C4244: '=' : conversion from '__int64' to 'size_t', possible loss of data
+     1>d:\work\moplugs\scenegraph_shared\code\gpucache_loader.cpp(903): warning C4244: 'argument' : conversion from '__int64' to 'unsigned int', possible loss of data
+     1>d:\work\moplugs\scenegraph_shared\code\gpucache_loader.cpp(909): warning C4244: 'argument' : conversion from '__int64' to 'size_t', possible loss of data
+     1>d:\work\moplugs\scenegraph_shared\code\gpucache_loader.cpp(909): warning C4244: 'argument' : conversion from '__int64' to 'size_t', possible loss of data
+         Generating Code...
+       Lib:
+         d:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\Lib.exe /OUT:"..\lib\sg_shared_Win32_Debug.lib" /NOLOGO Debug\gpucache_loader.obj
+         Debug\gpucache_model.obj
+         Debug\gpucache_saver.obj
+         Debug\gpucache_saverImpl.obj
+         Debug\gpucache_visitor.obj
+         Debug\Shader.obj
+         Debug\shared_camera.obj
+         Debug\shared_glsl.obj
+         Debug\shared_lights.obj
+         Debug\shared_materials.obj
+         Debug\shared_misc.obj
+         Debug\shared_models.obj
+         Debug\shared_projectors.obj
+         Debug\shared_shaders.obj
+         Debug\shared_textures.obj
+         Debug\utils_shaders.obj
+     1>shared_camera.obj : warning LNK4221: This object file does not define any previously undefined public symbols, so it will not be used by any link operation that consumes this library
+         sg_shared.vcxproj -> D:\Work\MOPLUGS\SceneGraph_Shared\projects\..\lib\sg_shared_Win32_Debug.lib
+       FinalizeBuildStatus:
+         Deleting file "Debug\sg_shared.unsuccessfulbuild".
+         Touching "Debug\sg_shared.lastbuildstate".
+     1>Done Building Project "D:\Work\MOPLUGS\SceneGraph_Shared\projects\sg_shared.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:05.63

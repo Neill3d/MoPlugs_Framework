@@ -1,0 +1,17 @@
+﻿Build started 05.09.2017 11:58:40.
+     1>Project "D:\Work\MOPLUGS\SceneGraph_Shared\projects\sg_shared.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "x64\Debug\sg_shared.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         All outputs are up-to-date.
+       Lib:
+         All outputs are up-to-date.
+         sg_shared.vcxproj -> D:\Work\MOPLUGS\SceneGraph_Shared\projects\..\lib\sg_shared_x64_Debug.lib
+       FinalizeBuildStatus:
+         Deleting file "x64\Debug\sg_shared.unsuccessfulbuild".
+         Touching "x64\Debug\sg_shared.lastbuildstate".
+     1>Done Building Project "D:\Work\MOPLUGS\SceneGraph_Shared\projects\sg_shared.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.10
