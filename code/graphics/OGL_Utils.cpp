@@ -11,7 +11,7 @@
 
 #include "OGL_Utils.h"
 #include "CheckGLError.h"
-#include "nv_dds.h"
+#include "..\nv_dds\nv_dds.h"
 
 double log2( double n )
 {  

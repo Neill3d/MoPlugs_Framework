@@ -9,14 +9,6 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release 2017|Win32">
-      <Configuration>Release 2017</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release 2017|x64">
-      <Configuration>Release 2017</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -48,19 +40,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 2017|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>NotSet</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>NotSet</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 2017|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -78,18 +58,12 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release 2017|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release 2017|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\include;..\..\glew-1.11.0\include;..\..\nvFX-master\nvFX-master\samples\shared\nv_dds;..\..\nvFX-master\nvFX-master\include;..\..\glm-0.9.6.3\glm;..\..\Include;$(IncludePath)</IncludePath>
+    <IncludePath>..\include;..\..\glew\include;..\..\nvFX\include;..\external\glm-0.9.5.3;..\..\Include;$(IncludePath)</IncludePath>
     <OutDir>..\lib\</OutDir>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
   </PropertyGroup>
@@ -98,24 +72,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
-    <IncludePath>..\include;..\..\glew-1.11.0\include;..\..\nvFX-master\nvFX-master\samples\shared\nv_dds;..\..\nvFX-master\nvFX-master\include;..\..\glm-0.9.5.3;..\..\Include;$(IncludePath)</IncludePath>
+    <IncludePath>..\include;..\..\glew\include;..\..\nvFX\include;..\external\glm-0.9.5.3;..\..\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\include;..\..\glew-1.11.0\include;..\..\nvFX-master\nvFX-master\samples\shared\nv_dds;..\..\nvFX-master\nvFX-master\include;..\..\glm-0.9.6.3\glm;..\..\Include;$(IncludePath)</IncludePath>
-    <OutDir>..\lib\</OutDir>
-    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 2017|x64'">
-    <IncludePath>..\include;..\..\glew-1.11.0\include;..\..\nvFX-master\nvFX-master\samples\shared\nv_dds;..\..\nvFX-master\nvFX-master\include;..\..\glm-0.9.6.3\glm;..\..\Include;$(IncludePath)</IncludePath>
+    <IncludePath>..\include;..\..\glew\include;..\..\nvFX\include;..\..\glm\glm;..\..\Include;$(IncludePath)</IncludePath>
     <OutDir>..\lib\</OutDir>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\lib\</OutDir>
-    <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
-    <IncludePath>..\include;..\..\glew-1.11.0\include;..\..\nvFX-master\nvFX-master\samples\shared\nv_dds;..\..\nvFX-master\nvFX-master\include;..\..\glm-0.9.5.3;..\..\Include;$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 2017|Win32'">
     <OutDir>..\lib\</OutDir>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
     <IncludePath>..\include;..\..\glew-1.11.0\include;..\..\nvFX-master\nvFX-master\samples\shared\nv_dds;..\..\nvFX-master\nvFX-master\include;..\..\glm-0.9.5.3;..\..\Include;$(IncludePath)</IncludePath>
@@ -163,41 +127,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release 2017|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;TIXML_USE_STL;GLEW_STATIC;NOMINMAX;GLM_FORCE_RADIANS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>GLM_FORCE_SSE4;_WIN32;WIN32;NDEBUG;_LIB;TIXML_USE_STL;GLEW_STATIC;NOMINMAX;GLM_FORCE_RADIANS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release 2017|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>

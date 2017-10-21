@@ -19,7 +19,7 @@
 #include <sys\types.h>
 #include <sys\stat.h>
 
-#include <nv_dds.h>
+#include "nv_dds\nv_dds.h"
 
 bool CGPUCacheSaver::Save(const char *filename, CGPUCacheSaverQuery *pQuery )
 //bool WriteObjectsToXML(const char *fileName, const char *modelFileName, const char *texturesFileName, FBModelList &pList)

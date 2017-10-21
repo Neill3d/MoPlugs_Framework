@@ -14,7 +14,9 @@
 
 #include "gpucache_model.h"
 
-extern void DebugOGL_Callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char *message, const void*userParam);
+#ifdef _DEBUG
+	extern void DebugOGL_Callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char *message, const void*userParam);
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -408,12 +410,12 @@ bool CGPUCacheModel::BindUberShader(	Graphics::ShaderEffect *pUberShader,
 {
 	if (pUberShader == nullptr) 
 		return false;
-
+	/*
 #ifdef _DEBUG
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback( DebugOGL_Callback, nullptr );
 #endif
-	
+	*/
 	// make textures resident for a shader
 	if (lockTextures)
 	{

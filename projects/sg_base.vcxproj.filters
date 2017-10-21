@@ -96,13 +96,13 @@
     <ClCompile Include="..\code\TextUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\nvFX-master\nvFX-master\samples\shared\nvImage\nvImage.cpp">
+    <ClCompile Include="..\code\nv_dds\nv_dds.cpp">
       <Filter>nv_shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\nvFX-master\nvFX-master\samples\shared\nvImage\nvImageDDS.cpp">
+    <ClCompile Include="..\code\nvImage\nvImage.cpp">
       <Filter>nv_shared</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\nvFX-master\nvFX-master\samples\shared\nv_dds\nv_dds.cpp">
+    <ClCompile Include="..\code\nvImage\nvImageDDS.cpp">
       <Filter>nv_shared</Filter>
     </ClCompile>
   </ItemGroup>
@@ -179,10 +179,10 @@
     <ClInclude Include="..\code\Delegate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\nvFX-master\nvFX-master\samples\shared\nvImage\nvImage.h">
+    <ClInclude Include="..\code\nv_dds\nv_dds.h">
       <Filter>nv_shared</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\nvFX-master\nvFX-master\samples\shared\nv_dds\nv_dds.h">
+    <ClInclude Include="..\code\nvImage\nvImage.h">
       <Filter>nv_shared</Filter>
     </ClInclude>
   </ItemGroup>
