@@ -103,7 +103,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>GLM_FORCE_SSE4;_WIN32;WIN32;_DEBUG;_LIB;TIXML_USE_STL;GLEW_STATIC;NOMINMAX;GLM_FORCE_RADIANS;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLM_FORCE_SSE4;_WIN32;WIN32;_DEBUG;_LIB;TIXML_USE_STL;GLEW_STATIC;NOMINMAX;GLM_FORCE_RADIANS;_HAS_ITERATOR_DEBUGGING=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

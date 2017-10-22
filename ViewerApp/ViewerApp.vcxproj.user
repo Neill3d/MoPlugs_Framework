@@ -8,4 +8,8 @@
     <LocalDebuggerCommandArguments>"d:\TheWALL_ENV\WALK_ALATOR_EXTERIOR.xml"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LocalDebuggerCommandArguments>-f "d:\Work\TheWALL_ENV\WALK_ALATOR_EXTERIOR.xml"</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>

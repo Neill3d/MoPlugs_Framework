@@ -62,6 +62,14 @@ bool loadModel(const char *filename);
 //////////////////////////////////////////////////////////////////////////////////////
 //
 
+void DebugOGL_Callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char *message, const void*userParam)
+{
+	if (GL_DEBUG_SEVERITY_HIGH == severity)
+	{
+		printf("%s\n", message);
+	}
+}
+
 static void error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error: %s\n", description);
@@ -128,37 +136,26 @@ void draw(float time)
 
 	mLightManager.Prep( mCameraCache, nullptr );
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glMultMatrixf( m_projectionMatrix.mat_array);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glMultMatrixf( modelView.mat_array );
-
-	float axisScale = 1000.0f;
-
-	glBegin(GL_LINES);
-
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(0.0f, 0.0f, 0.0f);
-	glVertex3f(5.0f * axisScale, 0.0f, 0.0f);
-
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(0.0f, 0.0f, 0.0f);
-	glVertex3f(0.0f, 5.0f * axisScale, 0.0f);
-
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(0.0f, 0.0f, 0.0f);
-	glVertex3f(0.0f, 0.0f, 5.0f * axisScale);
-
-	glEnd();
-
-		
 	if (mCacheModel && mUberShader)
 	{
-		mCacheModel->Render( mCameraCache, mUberShader, false, nullptr );
+		mUberShader->UploadCameraUniforms(mCameraCache);
 
+		mUberShader->SetNumberOfProjectors(0);
+		mUberShader->UploadModelTransform( mat4(array16_id) );
+	
+		mUberShader->UploadLightingInformation( false,
+				vec4(0.3f, 0.3f, 0.3f, 0.0f), 
+				0, 0);
+
+		// models normal matrix update, according to camera modelview
+		mCacheModel->PrepRender( mCameraCache, mUberShader, false, nullptr);
+
+		mCacheModel->RenderBegin( mCameraCache, mUberShader, false, 
+		 false, nullptr );
+	
+		mCacheModel->RenderOpaque( mCameraCache, mUberShader );
+		mCacheModel->RenderEnd( mCameraCache, mUberShader);
+		
 		CHECK_GL_ERROR();
 	}
 }
@@ -188,7 +185,8 @@ bool loadModel(const char *filename)
 		mCacheModel->GetBoundingBox(bmin.vec_array, bmax.vec_array);
 		
 		const float scale = nv_norm(bmax-bmin);
-		m_cameraPos = bmax;
+		m_cameraPos = bmin;
+		//m_cameraPos.z *= -1.0f;
 
 		mCameraCache.farPlane = 2.0f * scale;
 		mCameraCache.realFarPlane = 2.0f * scale;
@@ -219,7 +217,9 @@ bool loadShader()
 	//
 	mUberShader = new Graphics::ShaderEffect();
 	// "D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\"
-	const std::string envVar (getEnvVar( MOPLUGS_SYS_ENV ));
+	//const std::string envVar (getEnvVar( MOPLUGS_SYS_ENV ));
+	const std::string envVar ("D:\\Work\\MOPLUGS_TheWALL\\_Plugins\\GLSLFX\\");
+	
 	if( !mUberShader->Initialize( envVar.c_str(), UBERSHADER_EFFECT, 512, 512, 1.0) )
 	{
 		delete mUberShader;
@@ -286,8 +286,9 @@ int main(int argc, char** argv)
     glfwWindowHint(GLFW_SAMPLES, samples);
     glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     window = glfwCreateWindow(800, 600, "Viewer App [OpenGL]", NULL, NULL);
     if (!window)
@@ -302,17 +303,29 @@ int main(int argc, char** argv)
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
+	// moplugs framework uses glew
+	const GLenum err = glewInit();
+	if (GLEW_OK != err)
+    {
+        printf ( "glewInit failed, aborting.\n" );
+		glfwTerminate();
+        exit (EXIT_FAILURE);
+	}
 	// Check extensions; exit on failure
     
 	try
 	{
-		const int extCount = 5;
+		const int extCount = 6;
 		const char *extensions[extCount] = { "GL_ARB_multisample", "GL_NV_vertex_buffer_unified_memory",
-			"GL_NV_shader_buffer_load", "GL_EXT_direct_state_access", "GL_NV_bindless_texture" };
+			"GL_NV_shader_buffer_load", "GL_EXT_direct_state_access", "GL_NV_bindless_texture", "GL_ARB_get_program_binary" };
 
 		for (int i=0; i<extCount; ++i)
-			if ( !glfwExtensionSupported( extensions[i] ) )
+		{
+			if (!glewIsExtensionSupported( extensions[i] ))
 				throw extensions[i];
+			//if ( !glfwExtensionSupported( extensions[i] ) )
+			//	throw extensions[i];
+		}
 	}
 	catch (const char *what)
     {
@@ -321,6 +334,19 @@ int main(int argc, char** argv)
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
+
+#ifdef _DEBUG
+	glEnable(GL_DEBUG_OUTPUT);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	glDebugMessageCallback( DebugOGL_Callback, nullptr );
+#endif
+
+	//
+	mCameraCache.fov = 35.0;
+	mCameraCache.nearPlane = 10.0;
+	mCameraCache.farPlane = 4000.0;
+	mCameraCache.width = 800.0;
+	mCameraCache.height = 600.0;
 
     glfwShowWindow(window);
 
@@ -342,6 +368,7 @@ int main(int argc, char** argv)
 	if ( filename.size() > 0 )
 	{
 		loadModel(filename.c_str() );
+		framebuffer_size_callback(window, 800, 600);
 	}
 
 	// drop any geom cache file here (*.xml)

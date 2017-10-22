@@ -1,3 +1,96 @@
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(589) : error C1009: "R" is not member of struct "LIGHTRES"
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(593) : error C1113: actual parameter #3 must be same type as formal out parameter ("result")
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(593) : error C7550: OpenGL does not allow passing uniform into out or inout parameter
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(593) : error C1104: too many parameters in function call
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(783) : error C1009: "R" is not member of struct "LIGHTRES"
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(887) : error C1009: "R" is not member of struct "LIGHTRES"
+shared_lighting.glslfxh(321) : error C1008: undefined variable "SCREEN_SIZE"
+shared_lighting.glslfxh(322) : error C1008: undefined variable "SCREEN_SIZE"
+CSB_NS_DoContrastSaturationBrightness, FragmentDepthAlgorithm_NS_linearDepth, NoneTextures_NS_texturing, Projectors_NS_FS, )
+Fragment info
+-------------
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+
+Encountered errors during creation of shader-program
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(589) : error C1009: "R" is not member of struct "LIGHTRES"
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(593) : error C1113: actual parameter #3 must be same type as formal out parameter ("result")
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(593) : error C7550: OpenGL does not allow passing uniform into out or inout parameter
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(593) : error C1104: too many parameters in function call
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(783) : error C1009: "R" is not member of struct "LIGHTRES"
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(887) : error C1009: "R" is not member of struct "LIGHTRES"
+shared_lighting.glslfxh(321) : error C1008: undefined variable "SCREEN_SIZE"
+shared_lighting.glslfxh(322) : error C1008: undefined variable "SCREEN_SIZE"
+BindedTextures_NS_texturing, CSB_NS_DoContrastSaturationBrightness, FragmentDepthAlgorithm_NS_linearDepth, Projectors_NS_FS, )
+Fragment info
+-------------
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+
+Encountered errors during creation of shader-program
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(589) : error C1009: "R" is not member of struct "LIGHTRES"
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(593) : error C1113: actual parameter #3 must be same type as formal out parameter ("result")
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(593) : error C7550: OpenGL does not allow passing uniform into out or inout parameter
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(593) : error C1104: too many parameters in function call
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(783) : error C1009: "R" is not member of struct "LIGHTRES"
+D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\\ProjectiveMapping_theWall.glslfx(887) : error C1009: "R" is not member of struct "LIGHTRES"
+shared_lighting.glslfxh(321) : error C1008: undefined variable "SCREEN_SIZE"
+shared_lighting.glslfxh(322) : error C1008: undefined variable "SCREEN_SIZE"
+BindlessTextures_NS_texturing, CSB_NS_DoContrastSaturationBrightness, FragmentDepthAlgorithm_NS_linearDepth, Projectors_NS_FS, )
+Fragment info
+-------------
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+(0) : error C3001: no program defined
+
+Encountered errors during creation of shader-program
 Delete CstBuffer transfBlock1 and remove it from repository
 Delete CstBuffer transfBlock2 and remove it from repository
 Delete CstBuffer frustumBlock and remove it from repository

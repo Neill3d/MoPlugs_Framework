@@ -70,8 +70,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\bin\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName).dir\Debug\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\bin\$(Platform)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName).dir\Debug\$(Platform)</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
@@ -98,6 +98,10 @@
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\nvFX\build\lib\Debug;..\..\glew\lib\Release\Win32;..\lib;$(LibraryPath)</LibraryPath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\nvFX\include;..\glew\include;..\code;..\Include;..\glm;$(IncludePath)</IncludePath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\Work\TestApp\nvFX\build2\lib\Release;..\glew-1.10.0\lib\Release\Win32;..\nvExtensions\lib\vs2010x86;..\SceneGraph_Shared\lib;D:\Work\_MIDDLEWARE\glfw-3.1.1\build\src;$(LibraryPath)</LibraryPath>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\bin\$(Platform)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectName).dir\Debug\$(Platform)\</IntDir>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\nvFX\include;..\..\glew\include;..\code\;..\Include;..\external\glm-0.9.5.3;..\..\glfw\include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\nvFX\build\lib\Debug;..\..\glew\lib\Release\x64;..\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -280,6 +284,17 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Link>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;glu32.lib;FxLib64D.lib;FxLibGL64D.lib;FxParser64D.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Debug";GLEW_STATIC;_HAS_ITERATOR_DEBUGGING=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectReference Include="..\nvExtensions\build\vs2010win32\NvAppBase.vcxproj">
       <Project>{60297368-40d0-a29b-a2c0-714841945de0}</Project>
@@ -302,10 +317,10 @@
     <ProjectReference Include="..\nvFX-master\nvFX-master\build\FxLib\FxLib.vcxproj">
       <Project>{b2a1a3f7-81db-4bc1-ad18-23c73165ea58}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\SceneGraph_Shared\projects\sg_base.vcxproj">
+    <ProjectReference Include="..\projects\sg_base.vcxproj">
       <Project>{60091670-3c61-4ad8-886e-b0e4a2a56b44}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\SceneGraph_Shared\projects\sg_shared.vcxproj">
+    <ProjectReference Include="..\projects\sg_shared.vcxproj">
       <Project>{e248c8cb-899f-407c-b5b2-5fbb4c8486ae}</Project>
     </ProjectReference>
     <ProjectReference Include="C:/Work/_MIDDLEWARE/glfw-3.1.1/build/ZERO_CHECK.vcxproj">
@@ -320,20 +335,24 @@
     <ClCompile Include="GUI.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="MAIN.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="MainApp.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="textures_effect.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="textures_view.cxx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
