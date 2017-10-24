@@ -83,6 +83,7 @@
     <IncludePath>..\include;..\..\glew\include;..\..\nvFX-master\nvFX-master\samples\shared\nv_dds;..\..\nvFX\include;..\..\glm;..\..\Include;$(IncludePath)</IncludePath>
     <OutDir>..\lib\</OutDir>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+    <IntDir>..\..\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
