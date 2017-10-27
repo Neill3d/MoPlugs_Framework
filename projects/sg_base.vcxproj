@@ -75,9 +75,10 @@
     <IncludePath>..\include;..\..\glew\include;..\..\nvFX\include;..\external\glm-0.9.5.3;..\..\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\include;..\..\glew\include;..\..\nvFX\include;..\..\glm\glm;..\..\Include;$(IncludePath)</IncludePath>
+    <IncludePath>..\include;$(MOPLUGS_EXTERNAL)\glew\include;$(MOPLUGS_EXTERNAL)\nvFX\include;$(MOPLUGS_EXTERNAL)\glm-0.9.6.3;..\..\Include;$(IncludePath)</IncludePath>
     <OutDir>..\lib\</OutDir>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+    <IntDir>..\..\..\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>..\include;..\..\glew\include;..\..\nvFX-master\nvFX-master\samples\shared\nv_dds;..\..\nvFX\include;..\..\glm;..\..\Include;$(IncludePath)</IncludePath>
