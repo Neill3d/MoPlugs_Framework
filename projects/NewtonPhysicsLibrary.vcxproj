@@ -95,7 +95,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 2017|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -142,16 +142,18 @@
     <OutDir>..\..\_plugins_physics\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug 2015|x64'">
-    <IncludePath>..\..\newton-dynamics\packages\dCustomJoints;..\..\newton-dynamics\coreLibrary_300\source\newton;..\..\newton-dynamics\packages\dMath;..\..\newton-dynamics\packages\dVisualDebuggerServer;..\..\glew-1.11.0\include;..\..\newton-dynamics\packages\dContainers;../../newton-dynamics\packages\thirdParty/timeTracker;$(IncludePath)</IncludePath>
-    <OutDir>..\..\_plugins_physics\</OutDir>
+    <IncludePath>$(MOPLUGS_EXTERNAL)\newton-dynamics\packages\dCustomJoints;$(MOPLUGS_EXTERNAL)\newton-dynamics\coreLibrary_300\source\newton;$(MOPLUGS_EXTERNAL)\newton-dynamics\packages\dMath;$(MOPLUGS_EXTERNAL)\newton-dynamics\packages\dVisualDebuggerServer;$(MOPLUGS_EXTERNAL)\external\glew\include;$(MOPLUGS_EXTERNAL)\newton-dynamics\packages\dContainers;$(MOPLUGS_EXTERNAL)/newton-dynamics\packages\thirdParty/timeTracker;$(MOPLUGS_EXTERNAL)/glew/include;$(IncludePath)</IncludePath>
+    <OutDir>../lib/</OutDir>
+    <IntDir>../../$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug 2013|x64'">
     <IncludePath>..\..\newton-dynamics\packages\dCustomJoints;..\..\newton-dynamics\coreLibrary_300\source\newton;..\..\newton-dynamics\packages\dMath;..\..\newton-dynamics\packages\dVisualDebuggerServer;..\..\glew-1.11.0\include;..\..\newton-dynamics\packages\dContainers;$(IncludePath)</IncludePath>
     <OutDir>..\..\_plugins_physics\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>..\..\newton-dynamics\packages\dCustomJoints;..\..\newton-dynamics\coreLibrary_300\source\newton;..\..\newton-dynamics\packages\dMath;..\..\newton-dynamics\packages\dVisualDebuggerServer;..\..\glew-1.11.0\include;..\..\newton-dynamics\packages\dContainers;../../newton-dynamics\packages\thirdParty/timeTracker;$(IncludePath)</IncludePath>
-    <IntDir>..\..\..\$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(MOPLUGS_EXTERNAL)\newton-dynamics\packages\dCustomJoints;$(MOPLUGS_EXTERNAL)\newton-dynamics\coreLibrary_300\source\newton;$(MOPLUGS_EXTERNAL)\newton-dynamics\packages\dMath;$(MOPLUGS_EXTERNAL)\newton-dynamics\packages\dVisualDebuggerServer;$(MOPLUGS_EXTERNAL)\external\glew\include;$(MOPLUGS_EXTERNAL)\newton-dynamics\packages\dContainers;$(MOPLUGS_EXTERNAL)/newton-dynamics\packages\thirdParty/timeTracker;$(MOPLUGS_EXTERNAL)/glew/include;$(IncludePath)</IncludePath>
+    <IntDir>../../$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
+    <OutDir>../lib/</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release 2017|x64'">
     <IncludePath>$(MOPLUGS_EXTERNAL)\newton-dynamics\packages\dCustomJoints;$(MOPLUGS_EXTERNAL)\newton-dynamics\coreLibrary_300\source\newton;$(MOPLUGS_EXTERNAL)\newton-dynamics\packages\dMath;$(MOPLUGS_EXTERNAL)\newton-dynamics\packages\dVisualDebuggerServer;$(MOPLUGS_EXTERNAL)\external\glew\include;$(MOPLUGS_EXTERNAL)\newton-dynamics\packages\dContainers;$(MOPLUGS_EXTERNAL)/newton-dynamics\packages\thirdParty/timeTracker;$(MOPLUGS_EXTERNAL)/glew/include;$(IncludePath)</IncludePath>
@@ -225,7 +227,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;GLEW_STATIC;_CRT_SECURE_NO_DEPRECATE;_HAS_EXCEPTIONS=0;_WINDOWS;HAVE_GL_H;HAVE_GLU_H;AL_LIBTYPE_STATIC;BT_USE_DOUBLE_PRECISION;_NEWTON_STATIC_LIB;_CUSTOM_JOINTS_STATIC_LIB;_CRT_SECURE_NO_WARNINGS;_NEWTON_USE_DOUBLE;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;BT_USE_DOUBLE_PRECISION;_NEWTON_STATIC_LIB;_CUSTOM_JOINTS_STATIC_LIB;_CRT_SECURE_NO_WARNINGS;_NEWTON_USE_DOUBLE;GLEW_STATIC;_CRT_SECURE_NO_DEPRECATE;_HAS_EXCEPTIONS=0;_WINDOWS;HAVE_GL_H;HAVE_GLU_H;AL_LIBTYPE_STATIC;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -326,6 +328,8 @@
     <ClCompile Include="..\code\library_NewtonPhysics\dHighResolutionTimer.cpp" />
     <ClCompile Include="..\code\library_NewtonPhysics\dRuntimeProfiler.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release 2017|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug 2015|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\code\library_NewtonPhysics\Newton_CarEntity.cpp" />
     <ClCompile Include="..\code\library_NewtonPhysics\Newton_entities.cpp" />

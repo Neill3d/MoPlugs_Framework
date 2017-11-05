@@ -63,9 +63,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>..\include;..\..\glew\include;..\..\nvFX\include;..\external\glm-0.9.5.3;..\..\Include;$(IncludePath)</IncludePath>
+    <IncludePath>..\include;$(MOPLUGS_EXTERNAL)\glew\include;$(MOPLUGS_EXTERNAL)\nvFX\include;$(MOPLUGS_EXTERNAL)\glm-0.9.6.3;..\..\Include;$(IncludePath)</IncludePath>
     <OutDir>..\lib\</OutDir>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
+    <IntDir>..\..\..\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\lib\</OutDir>
@@ -78,7 +79,7 @@
     <IncludePath>..\include;$(MOPLUGS_EXTERNAL)\glew\include;$(MOPLUGS_EXTERNAL)\nvFX\include;$(MOPLUGS_EXTERNAL)\glm-0.9.6.3;..\..\Include;$(IncludePath)</IncludePath>
     <OutDir>..\lib\</OutDir>
     <TargetName>$(ProjectName)_$(Platform)_$(Configuration)</TargetName>
-    <IntDir>..\..\..\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>..\..\..\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\lib\</OutDir>
@@ -104,7 +105,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>GLM_FORCE_SSE4;_WIN32;WIN32;_DEBUG;_LIB;TIXML_USE_STL;GLEW_STATIC;NOMINMAX;GLM_FORCE_RADIANS;_HAS_ITERATOR_DEBUGGING=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLM_FORCE_SSE4;_WIN32;WIN32;_DEBUG;_LIB;TIXML_USE_STL;GLEW_STATIC;NOMINMAX;GLM_FORCE_RADIANS;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,7 +155,7 @@
     <ClCompile Include="..\code\gpucache_saver.cpp" />
     <ClCompile Include="..\code\gpucache_saverImpl.cpp" />
     <ClCompile Include="..\code\gpucache_visitorImpl.cpp" />
-    <ClCompile Include="..\code\Shader.cpp" />
+    <ClCompile Include="..\code\ShaderFX.cpp" />
     <ClCompile Include="..\code\shared_camera.cpp" />
     <ClCompile Include="..\code\shared_glsl.cpp" />
     <ClCompile Include="..\code\shared_lights.cpp" />
@@ -173,7 +174,8 @@
     <ClInclude Include="..\code\gpucache_saverImpl.h" />
     <ClInclude Include="..\code\gpucache_types.h" />
     <ClInclude Include="..\code\gpucache_visitorImpl.h" />
-    <ClInclude Include="..\code\Shader.h" />
+    <ClInclude Include="..\code\ShaderFX.h" />
+    <ClInclude Include="..\code\ShaderFX_enums.h" />
     <ClInclude Include="..\code\shared_camera.h" />
     <ClInclude Include="..\code\shared_glsl.h" />
     <ClInclude Include="..\code\shared_lights.h" />

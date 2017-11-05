@@ -21,6 +21,14 @@
 
 #include "nv_dds\nv_dds.h"
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+// CGPUCacheSaver
+
+CGPUCacheSaver::CGPUCacheSaver()
+{
+	mQuery = nullptr;
+}
+
 bool CGPUCacheSaver::Save(const char *filename, CGPUCacheSaverQuery *pQuery )
 //bool WriteObjectsToXML(const char *fileName, const char *modelFileName, const char *texturesFileName, FBModelList &pList)
 {

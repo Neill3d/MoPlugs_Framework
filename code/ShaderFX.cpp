@@ -12,7 +12,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-#include "Shader.h"
+#include "ShaderFX.h"
 //#include "ShaderModelInfo.h"
 
 #ifdef _WIN32
@@ -87,9 +87,27 @@ void includeCallbackFunc(const char *incName, FILE *&fp, const char *&buf)
 ///////////////////////////////////////////////////////////////////////////////////
 //
 
-const char *CustomEffectShaderLocations::GetVertexLocationName(const CustomVertexShaderLocation location)
+const char *Projectors_GetVertexLocationName( GLint enumId )
 {
-	switch(location)
+	switch(enumId)
+	{
+		//
+		// vertex locations
+		
+	case eCustomVertexLocationAllTheShaders:
+		return "allTheShaders";
+	case eCustomVertexLocationAllTheMeshes:
+		return "allTheMeshes";
+	case eCustomVertexLocationAllTheModels:
+		return "allTheModels";
+	}
+
+	return "None";
+}
+
+const char *IBL_GetVertexLocationName( GLint enumId )
+{
+	switch(enumId)
 	{
 		//
 		// vertex locations
@@ -112,10 +130,87 @@ const char *CustomEffectShaderLocations::GetVertexLocationName(const CustomVerte
 	return "None";
 }
 
-const char *CustomEffectShaderLocations::GetFragmentLocationName(const CustomFragmentShaderLocation location)
+const char *Projectors_GetFragmentLocationName( GLint enumId )
 {
+	switch(enumId)
+	{
+		//
+		// fragment locations
+		
+	case eCustomLocationAmbient:
+		return "ambientSampler";
+	case eCustomLocationDiffuse:
+		return "diffuseSampler";
+	case eCustomLocationTransparency:
+		return "transparencySampler";
+	case eCustomLocationSpecularity:
+		return "specularitySampler";
+	case eCustomLocationReflectivity:
+		return "reflectivitySampler";
+	case eCustomLocationNormalMap:
+		return "normalMapSampler";
+	case eCustomLocationCubeMap:
+		return "cubeMapSampler";
 
-	switch(location)
+		// global scene data needed for shader
+
+	case eCustomLocationAllTheTextures:
+		return "allTheTextures";
+	case eCustomLocationAllTheMaterials:
+		return "allTheMaterials";
+	case eCustomLocationAllTheShaders:
+		return "allTheShaders";
+	case eCustomLocationAllTheProjectors:
+		return "allTheProjectors";
+
+	case eCustomLocationClusterGrid:
+		return "clusterGrid";
+	case eCustomLocationClusterIndex:
+		return "clusterIndex";
+	case eCustomLocationDirLights:
+		return "dirLights";
+	case eCustomLocationLights:
+		return "lights";
+
+	case eCustomLocationShaderDirLights:
+		return "shaderDirLights";
+	case eCustomLocationShaderLights:
+		return "shaderLights";
+
+			// 2d array textures (projections, shadows)
+	case eCustomLocationShadows:
+		return "shadowsSampler";
+	case eCustomLocationLightMatrices:
+		return "lightMatrices";
+
+			// array of samplers + mask samplers (8 samplers in total)
+	case eCustomLocationProjectors:
+		return "projectorsSampler";
+	case eCustomLocationMaskA:
+		return "projectorMaskA";
+	case eCustomLocationMaskB:
+		return "projectorMaskB";
+
+	case eCustomLocationBackgroundSampler:
+		return "backgroundSampler";
+	case eCustomLocationMatCapSampler:
+		return "matCapSampler";
+	case eCustomLocationRimSampler:			// texture that could define rim color in uv-space
+		return "rimSampler";
+
+	case eCustomLocationReflCubeSampler:
+		return "reflectionCubeSampler";
+	case eCustomLocationMainDepthSampler:	// used for soft particles
+		return "mainDepthSampler";
+
+	}
+
+	return "None";
+}
+
+const char *IBL_GetFragmentLocationName( GLint enumId )
+{
+	switch(enumId)
 	{
 		//
 		// fragment locations
@@ -250,48 +345,166 @@ const char *CustomEffectShaderLocations::GetFragmentLocationName(const CustomFra
 	return "None";
 }
 
-int CustomEffectShaderLocations::PrepVertexLocations()
+
+///////////////////////////////////////////////////////////////////////
+//
+
+//! a constructor
+CustomShaderLocations::CustomShaderLocations()
 {
-	if (vertex < 0)
-		return 0;
-
-	int count=0;
-	for (int i=0; i<eCustomVertexLocationCount; ++i)
-	{
-		GLint loc = glGetUniformLocation(vertex, GetVertexLocationName( (CustomVertexShaderLocation) i) );
-
-		if (loc >= 0)
-			count += 1;
-		vertexLocations[i] = loc;
-	}
-
-	return count;
+	mShader = 0;
 }
 
-int CustomEffectShaderLocations::PrepFragmentLocations()
+// return a new location enum id
+GLint CustomShaderLocations::RegisterNewLocation(const char *locationName)
 {
-	if (fragment <= 0)
+	GLint id = (GLint) mLocations.size();
+	mLocations.push_back( -1 );	// that will be a id in shader after initialization
+	mLocationNames.push_back( std::string(locationName) );
+}
+
+// method stores default sampler value for a specified location
+// enumId - registred location enum id
+		
+GLint CustomShaderLocations::RegisterDefaultSampler( const GLint enumId, const GLint value )
+{
+	mSamplers.insert( std::make_pair( enumId, value ) );
+};
+
+void CustomShaderLocations::SetShaderId( const GLint shaderId ) {
+	mShader = shaderId;
+}
+const GLint CustomShaderLocations::GetShaderId() const {
+	return mShader;
+}
+
+int CustomShaderLocations::Prep()
+{
+	if (mShader <= 0)
 		return 0;
 
 	int count = 0;
-	for (int i=0; i<eCustomFragmentLocationCount; ++i)
+
+	auto iter=begin(mLocations);
+	auto iterName=begin(mLocationNames);
+
+	for (;
+		iter!=end(mLocations);
+		++iter, ++iterName )
 	{
-		GLint loc = glGetUniformLocation(fragment, GetFragmentLocationName( (CustomFragmentShaderLocation) i) );
+		GLint loc = glGetUniformLocation(mShader, iterName->c_str() );
 
 		if (loc >= 0)
 			count += 1;
-		fragmentLocations[i] = loc;
+		*iter = loc;
+	}
+}
+
+int CustomShaderLocations::PrepDefaultSamplerSlots()
+{
+	int count = 0;
+	if (mShader < 0)
+		return count;
+
+	for (auto iter=begin(mSamplers); iter!=end(mSamplers); ++iter)
+	{
+		GLint loc = mLocations[iter->first];
+		if ( loc >= 0 )
+		{
+			glProgramUniform1i( mShader, loc, iter->second );
+			count += 1;
+		}
+	}
+	return count;
+}
+
+bool CustomShaderLocations::SetUniform1i(const CustomFragmentShaderLocation location, const GLint value) const {
+	if ( mShader >= 0 && mLocations[location] >= 0)
+		glProgramUniform1i( mShader, mLocations[location], value );
+	return true;
+}
+bool CustomShaderLocations::SetUniform1f(const CustomFragmentShaderLocation location, const float value) const {
+	if ( mShader >= 0 && mLocations[location] >= 0)
+		glProgramUniform1f( mShader, mLocations[location], value );
+	return true;
+}
+		
+const GLint CustomShaderLocations::GetSamplerSlot(const CustomFragmentShaderLocation location) const
+{
+	auto iter = mSamplers.find(location);
+	if (iter != end(mSamplers) )
+		return iter->second;
+	return -1;
+}
+
+//////////////////////////////////////////////////////////////////////
+//
+
+ProjectorsVertexLocations::ProjectorsVertexLocations()
+	: CustomShaderLocations()
+{
+	for (int i=0; i<eCustomVertexLocationCount; ++i)
+		RegisterNewLocation( Projectors_GetVertexLocationName(i) );
+}
+
+///////////////////////////////////////////////////////////////////////
+//
+ProjectorsFragmentLocations::ProjectorsFragmentLocations()
+	: CustomShaderLocations()
+{
+	for (int i=0; i<eCustomFragmentLocationCount; ++i)
+		RegisterNewLocation( Projectors_GetFragmentLocationName(i) );
+
+	// register default samplers slots
+
+	RegisterDefaultSampler( eCustomLocationMainDepthSampler, 18 );
+	RegisterDefaultSampler( eCustomLocationReflCubeSampler, 17 );
+	RegisterDefaultSampler( eCustomLocationRimSampler, 16 );
+	RegisterDefaultSampler( eCustomLocationBackgroundSampler, 7 );
+
+	RegisterDefaultSampler( eCustomLocationMatCapSampler, 6 );
+	RegisterDefaultSampler( eCustomLocationDiffuseLightingSampler, 10 );
+	RegisterDefaultSampler( eCustomLocationSpecularLightingSampler, 11 );
+	RegisterDefaultSampler( eCustomLocationBrdfSampler, 12 );
+
+	RegisterDefaultSampler( eCustomLocationMaskA, 8 );
+	RegisterDefaultSampler( eCustomLocationMaskB, 9 );
+	RegisterDefaultSampler( eCustomLocationShadows, 5 );
+
+	RegisterDefaultSampler( eCustomLocationAmbient, 6 );
+	RegisterDefaultSampler( eCustomLocationDiffuse, 0 );
+	RegisterDefaultSampler( eCustomLocationTransparency, 1 );
+	RegisterDefaultSampler( eCustomLocationSpecularity, 2 );
+	RegisterDefaultSampler( eCustomLocationReflectivity, 3 );
+	RegisterDefaultSampler( eCustomLocationNormalMap, 4 );
+	//samplers.insert( std::make_pair( eCustomLocationCubeMap, 3 ) );
+
+	RegisterDefaultSampler( eCustomLocationEyeEnvDiffuseSampler, 13 );
+	RegisterDefaultSampler( eCustomLocationEyeEnvReflectionSampler, 14 );
+	RegisterDefaultSampler( eCustomLocationEyeEnvRefractionSampler, 15 );
+}
+
+int ProjectorsFragmentLocations::PrepDefaultSamplerSlots()
+{
+	int count = CustomShaderLocations::PrepDefaultSamplerSlots();
+	if (mShader < 0)
+		return count;
+
+	GLint loc = mLocations[eCustomLocationProjectors];
+	if (loc >= 0)
+	{
+		GLint samplersArray[6] = {10, 11, 12, 13, 14, 15};
+		glProgramUniform1iv( mShader, loc, 6, samplersArray );
+		count += 1;
 	}
 
 	return count;
-
-		
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// SHADER BASE
 
 
-ShaderBase::ShaderBase()
+BaseShaderFX::BaseShaderFX()
 {
 	fx_EffectMaterial = nullptr;
 
@@ -307,12 +520,12 @@ ShaderBase::ShaderBase()
 
 
 
-ShaderBase::~ShaderBase()
+BaseShaderFX::~BaseShaderFX()
 {
     Free();
 }
 
-void ShaderBase::ReSize(const int W, const int H)
+void BaseShaderFX::ReSize(const int W, const int H)
 {
 	nvFX::getResourceRepositorySingleton()->setParams(0,0,W,H,1,0,NULL );
     bool failed = nvFX::getResourceRepositorySingleton()->validateAll() ? false : true;
@@ -320,7 +533,7 @@ void ShaderBase::ReSize(const int W, const int H)
         assert(!"Oops");
 }
 
-void ShaderBase::Free()
+void BaseShaderFX::Free()
 {
 	if (fx_EffectMaterial)
 	{
@@ -334,7 +547,7 @@ void ShaderBase::Free()
 //-----------------------------------------------------------------------------
 // Load scene effect
 //-----------------------------------------------------------------------------
-bool ShaderBase::InitializeEffectParams()
+bool BaseShaderFX::InitializeEffectParams()
 {
 	//
     // Let's keep track in interface pointers everything, for purpose of clarity
@@ -358,7 +571,7 @@ bool ShaderBase::InitializeEffectParams()
 
 
 
-bool ShaderBase::loadMaterialEffect(const char *effectFileName, const double globalScale)
+bool BaseShaderFX::loadMaterialEffect(const char *effectFileName, const double globalScale)
 {
     if(fx_EffectMaterial)
     {
@@ -391,7 +604,7 @@ bool ShaderBase::loadMaterialEffect(const char *effectFileName, const double glo
 
 
 
-bool ShaderBase::Initialize( const char* resourcePath, const char *effectName, const int W, const int H, const double globalScale )
+bool BaseShaderFX::Initialize( const char* resourcePath, const char *effectName, const int W, const int H, const double globalScale )
 {
     sprintf_s( gResourcesPath, 256, "%s", resourcePath );
 
@@ -409,18 +622,18 @@ bool ShaderBase::Initialize( const char* resourcePath, const char *effectName, c
     return true;
 }
 
-const GLuint ShaderBase::GetFragmentProgramId()
+const GLuint BaseShaderFX::GetFragmentProgramId()
 {
 	return mFragmentProgram;
 }
 
-const GLuint ShaderBase::FindFragmentProgramLocation(const char *name)
+const GLuint BaseShaderFX::FindFragmentProgramLocation(const char *name)
 {
 	GLuint loc = glGetUniformLocation( mFragmentProgram, name );
 	return loc;
 }
 
-const GLuint ShaderBase::nvGetFragmentProgramId(nvFX::IPass *pass, const int programPipeline, const int shaderProgram)
+const GLuint BaseShaderFX::nvGetFragmentProgramId(nvFX::IPass *pass, const int programPipeline, const int shaderProgram)
 {
 	if (pass == nullptr)
 		return 0;
@@ -443,7 +656,7 @@ const GLuint ShaderBase::nvGetFragmentProgramId(nvFX::IPass *pass, const int pro
 	return fragmentId;
 }
 
-bool ShaderBase::PrepCommonLocations()
+bool BaseShaderFX::PrepCommonLocations()
 {
 	// Compile GLSL shader using sampler uniform <u>.  The shader itself
     // needs no special #extension directive as long as <u> is a uniform in
@@ -454,12 +667,12 @@ bool ShaderBase::PrepCommonLocations()
 
 	bool status = true;
 
-	mFragmentProgram = ShaderBase::nvGetFragmentProgramId(fx_pass, 0, 1);
+	mFragmentProgram = BaseShaderFX::nvGetFragmentProgramId(fx_pass, 0, 1);
 
 	return status;
 }
 
-void ShaderBase::BindShaderPrograms()
+void BaseShaderFX::BindShaderPrograms()
 {
 	CHECK_GL_ERROR();
 
@@ -482,7 +695,7 @@ void ShaderBase::BindShaderPrograms()
 	CHECK_GL_ERROR();
 }
 
-void ShaderBase::UnBindShaderPrograms()
+void BaseShaderFX::UnBindShaderPrograms()
 {
 
     if(fx_pass)
@@ -492,7 +705,7 @@ void ShaderBase::UnBindShaderPrograms()
 }
 
 
-void ShaderBase::UnsetTextures()
+void BaseShaderFX::UnsetTextures()
 {
 
     // TODO: Deactivate all textures.
@@ -514,14 +727,14 @@ void ShaderBase::UnsetTextures()
 
 
 
-void ShaderBase::Bind()
+void BaseShaderFX::Bind()
 {
 	// bind effect
 	BindShaderPrograms();
 }
 
 
-void ShaderBase::UnBind(const bool unlockTextures)
+void BaseShaderFX::UnBind(const bool unlockTextures)
 {
 	/*
 	FBCamera *pCamera = FBSystem::TheOne().Renderer->CurrentCamera;
@@ -552,7 +765,7 @@ void ShaderBase::UnBind(const bool unlockTextures)
 	//CGPUFBScene::instance().GetLightsManagerPtr()->DrawCameraFrustum( nearPlane, farPlane, projection, modelview );
 }
 
-void ShaderBase::SetWindowSize( const int offsetX, const int offsetY, const int width, const int height )
+void BaseShaderFX::SetWindowSize( const int offsetX, const int offsetY, const int width, const int height )
 {
 	if (fx_ScreenSize)
 		fx_ScreenSize->setValue4f( (float)offsetX, (float)offsetY, 1.0f/(float)width, 1.0f/(float)height);
@@ -565,7 +778,7 @@ void ShaderBase::SetWindowSize( const int offsetX, const int offsetY, const int 
 		*/
 }
 
-void ShaderBase::ShowError(const char* pText)
+void BaseShaderFX::ShowError(const char* pText)
 {
 	// TODO: output nvFX error
 
@@ -573,33 +786,59 @@ void ShaderBase::ShowError(const char* pText)
     //FBMessageBox("Cg Error", (char*)lErrStr,  "OK");
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// BaseMaterialShaderFX
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////// SHADER EFFECT
-
-ShaderEffect::ShaderEffect()
-	: ShaderBase()
+void BaseMaterialShaderFX::ConstructorUniformBuffers()
 {
-	/*
-	fx_TechPhong = nullptr;
-	fx_TechPhongLog = nullptr;
-	fx_TechPhongBindless = nullptr;
-	fx_TechPhongBindlessLog = nullptr;
-	fx_TechPhongCubeMap = nullptr;
-	fx_TechPhongBindlessCubeMap = nullptr;
-	*/
-	fx_TechWallMaterial = nullptr;
-	fx_TechWallMaterialLog = nullptr;
-	//fx_TechWallCubeMap = nullptr;
-	fx_TechCharacter = nullptr;
-	fx_TechDepthOverrides = nullptr;
-	fx_TechShadow = nullptr;
-	fx_TechCulling = nullptr;
-	fx_TechNormals = nullptr;
-	fx_TechNormalsLog = nullptr;
-	fx_TechSimple = nullptr;
+	mBufferTransfBlock[0] = mBufferTransfBlock[1] = 0;
+	mBufferFrustumBlock = 0;
+	mBufferCubeMapBlock = 0;
+	mBufferLightBlock = 0;
+}
+void BaseMaterialShaderFX::CreateUniformBuffers()
+{
+	FreeUniformBuffers();
 
+	glGenBuffers(2, &mBufferTransfBlock[0]);
+	glBindBuffer(GL_UNIFORM_BUFFER, mBufferTransfBlock[0]);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(transfBlock1), NULL, GL_STREAM_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, mBufferTransfBlock[1]);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(transfBlock2), NULL, GL_STREAM_DRAW);
+
+	glGenBuffers(1, &mBufferFrustumBlock);
+	glBindBuffer(GL_UNIFORM_BUFFER, mBufferFrustumBlock);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(frustumBlock), NULL, GL_STREAM_DRAW);
+
+	glGenBuffers(1, &mBufferCubeMapBlock);
+	glBindBuffer(GL_UNIFORM_BUFFER, mBufferCubeMapBlock);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(cubeMapBlock), NULL, GL_STREAM_DRAW);
+
+	glGenBuffers(1, &mBufferLightBlock);
+	glBindBuffer(GL_UNIFORM_BUFFER, mBufferLightBlock);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(lightBlock), NULL, GL_STREAM_DRAW);
+}
+void BaseMaterialShaderFX::FreeUniformBuffers()
+{
+	if (mBufferTransfBlock[0] > 0)
+		glDeleteBuffers(2, &mBufferTransfBlock[0] );
+	if (mBufferFrustumBlock > 0)
+		glDeleteBuffers(1, &mBufferFrustumBlock);
+	if (mBufferCubeMapBlock > 0)
+		glDeleteBuffers(1, &mBufferCubeMapBlock);
+	if (mBufferLightBlock > 0)
+		glDeleteBuffers(1, &mBufferLightBlock);
+
+	ConstructorUniformBuffers();
+}
+
+BaseMaterialShaderFX::BaseMaterialShaderFX()
+	: BaseShaderFX()
+{
+	fx_TechMaterialLinear = nullptr;
+	fx_TechMaterialLog = nullptr;
+	//fx_TechWallCubeMap = nullptr;
+	
 	// Cst buffers
 	fx_transfBlock1 = nullptr;
 	fx_transfBlock2 = nullptr;
@@ -607,7 +846,7 @@ ShaderEffect::ShaderEffect()
 	fx_cubeMapBlock = nullptr;
 
 	fx_lightBlock = nullptr;
-	fx_projectorsBlock = nullptr;
+	
 	
 	//
 	
@@ -616,7 +855,7 @@ ShaderEffect::ShaderEffect()
 	fx_numberOfShadows = nullptr;
 	fx_normalsLength= nullptr;
 	fx_AlphaPass = nullptr;
-	fx_numberOfProjectors = nullptr;
+	
 
 	fx_meshIndex = nullptr;
 
@@ -629,116 +868,34 @@ ShaderEffect::ShaderEffect()
 	//fx_rimOptions = nullptr;
 	//fx_rimColor = nullptr;
 
-	mLogDepth = false;
-	mOldLogDepth= false;
-
 	mCurrentTech = eEffectTechniqueShading;
-
-	mNoTextures = false;
-	mEarlyZ = false;
-	mBindless = false;
-	mCubeMapRendering = false;
-	mEyePass = false;
 	mAlpha = 0.0f;
 
 	ConstructorUniformBuffers();
 }
 
-ShaderEffect::~ShaderEffect()
+
+BaseMaterialShaderFX::~BaseMaterialShaderFX()
 {
 	Free();
 }
 
-void ShaderEffect::Free()
+void BaseMaterialShaderFX::Free()
 {
-	ShaderBase::Free();
+	BaseShaderFX::Free();
 
 	FreeUniformBuffers();
 }
 
 
-void ShaderEffect::SetTechnique(const EEffectTechnique technique)
+void BaseMaterialShaderFX::SetTechnique(const EEffectTechnique technique)
 {
 	mCurrentTech = technique;
 	PrepCurrentTech();
 }
-/*
-void ShaderEffect::SetNormalsParameters(FBRenderOptions *pOptions, const float length)
-{
-	if (fx_normalsLength)
-		fx_normalsLength->setValue1f(length);
-}
-*/
-void ShaderEffect::SetLogarithmicDepthHint(const EEffectDepthHint value)
-{
-	mLogarithmicDepthHint = value;
-}
 
-const EEffectDepthHint ShaderEffect::GetLogarithmicDepthHint() const
-{
-	return mLogarithmicDepthHint;
-}
 
-void ShaderEffect::SetLogarithmicDepth(const bool value)
-{
-	mLogDepth = value;
-	PrepLogDepth();
-
-	/*
-	bool newValue = value;
-	switch( mLogarithmicDepthHint )
-	{
-	case eEffectDepthUser:
-		newValue = value;
-		break;
-	case eEffectDepthLinear:
-		newValue = false;
-		break;
-	case eEffectDepthLogarithmic:
-		newValue = true;
-		break;
-	}
-	
-	if (newValue != mLogarithmicDepth)
-	{
-		mLogarithmicDepth = newValue;
-		PrepLogDepth();
-	}
-	*/
-}
-
-void ShaderEffect::SetEarlyZ(const bool value)
-{
-	mEarlyZ = value;
-
-	//PrepCurrent();
-}
-void ShaderEffect::SetEyePass( const bool value )
-{
-	mEyePass = value;
-}
-void ShaderEffect::NoTextures(const bool value)
-{
-	mNoTextures = value;
-
-	//PrepCurrent();
-}
-
-void ShaderEffect::SetBindless(const bool value)
-{
-	mBindless = value;
-
-	//PrepCurrent();
-}
-
-void ShaderEffect::SetCubeMapRendering(const bool value)
-{
-	mCubeMapRendering = value;
-
-	//PrepCurrent();
-}
-
-void ShaderEffect::PrepCurrentTech()
+void BaseMaterialShaderFX::PrepCurrentTech()
 {
 
 	switch(mCurrentTech)
@@ -773,61 +930,12 @@ void ShaderEffect::PrepCurrentTech()
 	if (fx_TechCurrent) fx_pass = fx_TechCurrent->getPass(0);
 }
 
-void ShaderEffect::PrepWall_PassAndLocations()
+
+bool BaseMaterialShaderFX::PrepLogDepth()
 {
-	int currentPassId = eTechWallPass_EarlyZNoTextures;
-	
-	if (false == mEarlyZ)
-	{
-		currentPassId = eTechWallPass_BindedTextures;
-
-		if (mNoTextures)
-			currentPassId = eTechWallPass_NoTextures;
-		else if (mBindless)
-			currentPassId = eTechWallPass_BindlessTextures;
-	}
-	else
-	{
-		currentPassId = eTechWallPass_BindedEarlyZ;
-
-		if (mNoTextures)
-			currentPassId = eTechWallPass_EarlyZNoTextures;
-		else if (mBindless)
-			currentPassId = eTechWallPass_BindlessEarlyZ;
-	}
-	
-	//
-	if (nullptr != fx_TechWallMaterial)
-	{
-		mCurrentLoc = &mWallLocations[currentPassId];
-		fx_pass = fx_TechWallMaterial->getPass(currentPassId);
-	}
-	else
-	if (mLogDepth && nullptr != fx_TechWallMaterialLog)
-	{
-		mCurrentLoc = &mWallLogLocations[currentPassId];
-		fx_pass = fx_TechWallMaterialLog->getPass(currentPassId);
-	} 
-}
-
-void ShaderEffect::PrepCharacter_PassAndLocations()
-{
-	ETechCharacterPasses passId = eTechCharacterPass_IBL;
-	if (true == mEyePass)
-		passId = eTechCharacterPass_Eye;
-
-	if (mEarlyZ)
-		passId = eTechCharacterPass_Simple;
-	else if (mNoTextures)
-		passId = eTechCharacterPass_NoTextures;
-
-	mCurrentLoc = &mCharacterLocations[passId];
-	fx_pass = fx_TechCharacter->getPass(passId);
-}
-
-bool ShaderEffect::PrepLogDepth()
-{
+	// TODO: shader overrride doesn't seem to work
 	return true;
+	/*
 	// !!!!
 	bool result = true;
 
@@ -861,13 +969,12 @@ bool ShaderEffect::PrepLogDepth()
 	techs = nullptr;
 
 	mOldLogDepth = mLogDepth;
-
-
-
+	
 	return result;
+	*/
 }
 
-void ShaderEffect::SetNumberOfShadows( const int numberOfShadows )
+void BaseMaterialShaderFX::SetNumberOfShadows( const int numberOfShadows )
 {
 	if (fx_numberOfShadows)
 	{
@@ -891,7 +998,7 @@ void ShaderEffect::UpdateDepthDisplacement(const float value)
 	}
 }
 */
-void ShaderEffect::SetMeshIndex( const int index )
+void BaseMaterialShaderFX::SetMeshIndex( const int index )
 {
 	if (fx_meshIndex)
 	{
@@ -899,7 +1006,7 @@ void ShaderEffect::SetMeshIndex( const int index )
 	}
 }
 
-void ShaderEffect::UpdateMeshIndex( const int index )
+void BaseMaterialShaderFX::UpdateMeshIndex( const int index )
 {
 	if (fx_meshIndex && fx_pass)
 	{
@@ -907,7 +1014,7 @@ void ShaderEffect::UpdateMeshIndex( const int index )
 	}
 }
 
-void ShaderEffect::SetTextureOffset(const vec4 &v)
+void BaseMaterialShaderFX::SetTextureOffset(const vec4 &v)
 {
 	if (fx_textureOffset)
 	{
@@ -915,7 +1022,7 @@ void ShaderEffect::SetTextureOffset(const vec4 &v)
 	}
 }
 
-void ShaderEffect::UpdateTextureOffset(const vec4 &v)
+void BaseMaterialShaderFX::UpdateTextureOffset(const vec4 &v)
 {
 	if (fx_textureOffset && fx_pass)
 	{
@@ -923,7 +1030,7 @@ void ShaderEffect::UpdateTextureOffset(const vec4 &v)
 	}
 }
 
-void ShaderEffect::SetTextureScaling(const vec4 &v)
+void BaseMaterialShaderFX::SetTextureScaling(const vec4 &v)
 {
 	if (fx_textureScaling)
 	{
@@ -931,7 +1038,7 @@ void ShaderEffect::SetTextureScaling(const vec4 &v)
 	}
 }
 
-void ShaderEffect::UpdateTextureScaling(const vec4 &v)
+void BaseMaterialShaderFX::UpdateTextureScaling(const vec4 &v)
 {
 	if (fx_textureScaling && fx_pass)
 	{
@@ -939,7 +1046,7 @@ void ShaderEffect::UpdateTextureScaling(const vec4 &v)
 	}
 }
 
-void ShaderEffect::SetSoftParticles(const float value)
+void BaseMaterialShaderFX::SetSoftParticles(const float value)
 {
 	if (fx_softParticles)
 	{
@@ -947,7 +1054,7 @@ void ShaderEffect::SetSoftParticles(const float value)
 	}
 }
 
-void ShaderEffect::UpdateSoftParticles(const float value )
+void BaseMaterialShaderFX::UpdateSoftParticles(const float value )
 {
 	if (fx_softParticles && fx_pass)
 	{
@@ -955,64 +1062,11 @@ void ShaderEffect::UpdateSoftParticles(const float value )
 	}
 }
 
-/*
-void ShaderEffect::SetRimParameters( const double useRim, const double rimPower, const bool useRimTexture, const vec4 &rimColor )
-{
-	if (fx_rimOptions)
-		fx_rimOptions->setValue4f( (float) useRim, (float) rimPower, (useRimTexture) ? 1.0f : 0.0f, 0.0f );
-	if (fx_rimColor)
-		fx_rimColor->setValue4fv( (float*) rimColor.vec_array );
-}
-
-void ShaderEffect::UpdateRimParameters( const double useRim, const double rimPower, const bool useRimTexture, const vec4 &rimColor )
-{
-	if (fx_pass)
-	{
-		if (fx_rimOptions)
-			fx_rimOptions->updateValue4f( (float) useRim, (float) rimPower, (useRimTexture) ? 1.0f : 0.0f, 0.0f, fx_pass );
-		if (fx_rimColor)
-			fx_rimColor->updateValue4fv( (float*) rimColor.vec_array, fx_pass );
-	}
-}
-
-
-void ShaderEffect::SetShaderMask(const vec4 &mask)
-{
-	if (fx_shaderMask)
-	{
-		fx_shaderMask->setValue4fv( (float*) mask.vec_array );
-	}
-}
-
-void ShaderEffect::UpdateShaderMask(const vec4 &mask)
-{
-	if (fx_shaderMask && fx_pass)
-	{
-		fx_shaderMask->updateValue4fv( (float*) mask.vec_array, fx_pass );
-	}
-}
-*/
-void ShaderEffect::SetNumberOfProjectors( const int numberOfProjectors )
-{
-	if (fx_numberOfProjectors)
-	{
-		fx_numberOfProjectors->setValue1i( numberOfProjectors );
-	}
-}
-
-void ShaderEffect::UpdateNumberOfProjectors( const int numberOfProjectors )
-{
-	if (fx_numberOfProjectors && fx_pass)
-	{
-		fx_numberOfProjectors->updateValue1i( numberOfProjectors, fx_pass );
-	}
-}
-
 
 //-----------------------------------------------------------------------------
 // scene instances, depending on the scene level needs
 //-----------------------------------------------------------------------------
-bool ShaderEffect::validateAndCreateSceneInstances()
+bool BaseMaterialShaderFX::validateAndCreateSceneInstances()
 {
     bool failed = false;
     //
@@ -1069,83 +1123,20 @@ bool ShaderEffect::validateAndCreateSceneInstances()
     return failed;
 }
 
-bool ShaderEffect::InitializeEffectParams()
+bool BaseMaterialShaderFX::InitializeEffectParams()
 {
-	if (false == ShaderBase::InitializeEffectParams() )
+	if (false == BaseShaderFX::InitializeEffectParams() )
 		return false;
 	
-	
+	fx_TechMaterialLinear = nullptr;
+	fx_TechMaterialLog = nullptr;
 
-	/*
-	//
-	fx_TechPhongNoTextures = fx_EffectMaterial->findTechnique("PhongNoTextures");
-	if(fx_TechPhongNoTextures && (!fx_TechPhongNoTextures->validate()))
-        return false;
+	if (false == OnFindTechnique() )
+		return false;
 
-	fx_TechPhong = fx_EffectMaterial->findTechnique("Phong");
-	if(fx_TechPhong && (!fx_TechPhong->validate()))
-        return false;
-	fx_TechPhongLog = fx_EffectMaterial->findTechnique("PhongLog");
-	if(fx_TechPhongLog && (!fx_TechPhongLog->validate()))
-        return false;
-	
-	fx_TechPhongBindless = fx_EffectMaterial->findTechnique("PhongBindless");
-	if(fx_TechPhongBindless && (!fx_TechPhongBindless->validate()))
-        return false;
-	fx_TechPhongBindlessLog = fx_EffectMaterial->findTechnique("PhongBindlessLog");
-	if(fx_TechPhongBindlessLog && (!fx_TechPhongBindlessLog->validate()))
-        return false;
-
-	fx_TechPhongCubeMap = fx_EffectMaterial->findTechnique("PhongCubeMap");
-	if(fx_TechPhongCubeMap && (!fx_TechPhongCubeMap->validate()))
-        return false;
-
-	fx_TechPhongBindlessCubeMap = fx_EffectMaterial->findTechnique("PhongBindlessCubeMap");
-	if(fx_TechPhongBindlessCubeMap && (!fx_TechPhongBindlessCubeMap->validate()))
-        return false;
-		*/
-
-	//
-	fx_TechWallMaterial = fx_EffectMaterial->findTechnique("WallMaterial");
-	if(fx_TechWallMaterial && (!fx_TechWallMaterial->validate()))
-        return false;
-
-	fx_TechWallMaterialLog = fx_EffectMaterial->findTechnique("WallMaterialLog");
-	if(fx_TechWallMaterialLog && (!fx_TechWallMaterialLog->validate()))
-        return false;
-
-	fx_TechDepthOverrides = fx_EffectMaterial->findTechnique("DepthOverrides");
-	if(fx_TechDepthOverrides && (!fx_TechDepthOverrides->validate()))
-        return false;
-		
-	fx_TechCharacter = fx_EffectMaterial->findTechnique("CharacterT");
-	if(fx_TechCharacter && (!fx_TechCharacter->validate()))
-        return false;
-
-	fx_TechShadow = fx_EffectMaterial->findTechnique("ShadowT");
-	if(fx_TechShadow && (!fx_TechShadow->validate()))
-        return false;
-
+	// TODO: this is depricated, shader override seems don't work
 	if (false == PrepLogDepth() )
 		return false;
-
-	//if (false == validateAndCreateSceneInstances() )
-	//	return false;
-
-	/*
-	fx_TechCulling = fx_EffectMaterial->findTechnique("Culling");
-	if(fx_TechCulling && (!fx_TechCulling->validate()))
-        return false;
-	fx_TechNormals = fx_EffectMaterial->findTechnique("Normals");
-	if(fx_TechNormals && (!fx_TechNormals->validate()))
-        return false;
-	fx_TechNormalsLog = fx_EffectMaterial->findTechnique("NormalsLog");
-	if(fx_TechNormalsLog && (!fx_TechNormalsLog->validate()))
-        return false;
-	fx_TechSimple = fx_EffectMaterial->findTechnique("Simple");
-	if(fx_TechSimple && (!fx_TechSimple->validate()))
-        return false;
-	*/
 
 	//
 	
@@ -1194,46 +1185,8 @@ bool ShaderEffect::InitializeEffectParams()
 	fx_AlphaPass = fx_EffectMaterial->findUniform("AlphaPass");
 	if (fx_AlphaPass)
 		fx_AlphaPass->setValue1f( 0.0f );
-	fx_numberOfProjectors = fx_EffectMaterial->findUniform("numProjectors");
+	
 	fx_numberOfShadows = fx_EffectMaterial->findUniform("numberOfShadows");
-
-	//
-	if (nullptr != fx_TechWallMaterial)
-	{
-		for (int i=0; i<eTechWallPass_Count; ++i)
-		{
-			nvFX::IPass *pPass = fx_TechWallMaterial->getPass(i);
-			mWallLocations[i].SetShadersId( ShaderBase::nvGetFragmentProgramId( pPass, 0, 0 ),
-											ShaderBase::nvGetFragmentProgramId( pPass, 0, 1 ) );
-		}
-	}
-
-	if (nullptr != fx_TechWallMaterialLog)
-	{
-		for (int i=0; i<eTechWallPass_Count; ++i)
-		{
-			nvFX::IPass *pPass = fx_TechWallMaterialLog->getPass(i);
-			mWallLogLocations[i].SetShadersId( ShaderBase::nvGetFragmentProgramId( pPass, 0, 0 ),
-											ShaderBase::nvGetFragmentProgramId( pPass, 0, 1 ) );
-		}
-	}
-
-	if (nullptr != fx_TechCharacter)
-	{
-		for (int i=0; i<eTechCharacterPass_Count; ++i)
-		{
-			nvFX::IPass *pPass = fx_TechCharacter->getPass(i);
-			mCharacterLocations[i].SetShadersId( ShaderBase::nvGetFragmentProgramId( pPass, 0, 0 ),
-											ShaderBase::nvGetFragmentProgramId( pPass, 0, 1 ) );
-		}
-	}
-
-	if (nullptr != fx_TechShadow)
-	{
-		nvFX::IPass *pPass = fx_TechShadow->getPass(0);
-		mShadowLoc.SetShadersId( ShaderBase::nvGetFragmentProgramId( pPass, 0, 0 ),
-											ShaderBase::nvGetFragmentProgramId( pPass, 0, 2 ) );
-	}
 
 	mCurrentLoc = nullptr;
 
@@ -1243,13 +1196,174 @@ bool ShaderEffect::InitializeEffectParams()
 	return true;
 }
 
-nvFX::IUniform	*ShaderEffect::FindUniform(const char *name)
+nvFX::IUniform	*BaseMaterialShaderFX::FindUniform(const char *name)
 {
 	if (nullptr != fx_EffectMaterial)
 		return fx_EffectMaterial->findUniform(name);
 
 	return nullptr;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////
+// ProjectorsShaderFX
+
+ProjectorsShaderFX::ProjectorsShaderFX()
+	: BaseMaterialShaderFX()
+{
+	fx_projectorsBlock = nullptr;
+	fx_numberOfProjectors = nullptr;
+}
+
+bool ProjectorsShaderFX::OnFindTechnique()
+{
+	fx_TechMaterialLinear = fx_EffectMaterial->findTechnique("WallMaterial");
+	if(fx_TechMaterialLinear && (!fx_TechMaterialLinear->validate()))
+        return false;
+
+	fx_TechMaterialLog = fx_EffectMaterial->findTechnique("WallMaterialLog");
+	if(fx_TechMaterialLog && (!fx_TechMaterialLog->validate()))
+        return false;
+
+	fx_TechShadow = fx_EffectMaterial->findTechnique("ShadowT");
+	if(fx_TechShadow && (!fx_TechShadow->validate()))
+        return false;
+
+	fx_numberOfProjectors = fx_EffectMaterial->findUniform("numProjectors");
+
+	//
+	if (nullptr != fx_TechMaterialLinear)
+	{
+		for (int i=0; i<eTechWallPass_Count; ++i)
+		{
+			nvFX::IPass *pPass = fx_TechMaterialLinear->getPass(i);
+			mWallLocations[i].SetShadersId( BaseShaderFX::nvGetFragmentProgramId( pPass, 0, 0 ),
+											BaseShaderFX::nvGetFragmentProgramId( pPass, 0, 1 ) );
+		}
+	}
+
+	if (nullptr != fx_TechMaterialLog)
+	{
+		for (int i=0; i<eTechWallPass_Count; ++i)
+		{
+			nvFX::IPass *pPass = fx_TechMaterialLog->getPass(i);
+			mWallLogLocations[i].SetShadersId( BaseShaderFX::nvGetFragmentProgramId( pPass, 0, 0 ),
+											BaseShaderFX::nvGetFragmentProgramId( pPass, 0, 1 ) );
+		}
+	}
+
+	// TODO: is depricated ?!
+	/*
+	if (nullptr != fx_TechShadow)
+	{
+		nvFX::IPass *pPass = fx_TechShadow->getPass(0);
+		mShadowLoc.SetShadersId( ShaderBase::nvGetFragmentProgramId( pPass, 0, 0 ),
+											ShaderBase::nvGetFragmentProgramId( pPass, 0, 2 ) );
+	}
+	*/
+
+	return true;
+}
+
+void ProjectorsShaderFX::PrepWall_PassAndLocations()
+{
+	int currentPassId = eTechWallPass_EarlyZNoTextures;
+	
+	if (false == mEarlyZ)
+	{
+		currentPassId = eTechWallPass_BindedTextures;
+
+		if (mNoTextures)
+			currentPassId = eTechWallPass_NoTextures;
+		else if (mBindless)
+			currentPassId = eTechWallPass_BindlessTextures;
+	}
+	else
+	{
+		currentPassId = eTechWallPass_BindedEarlyZ;
+
+		if (mNoTextures)
+			currentPassId = eTechWallPass_EarlyZNoTextures;
+		else if (mBindless)
+			currentPassId = eTechWallPass_BindlessEarlyZ;
+	}
+	
+	//
+	if (nullptr != fx_TechWallMaterial)
+	{
+		mCurrentLoc = &mWallLocations[currentPassId];
+		fx_pass = fx_TechWallMaterial->getPass(currentPassId);
+	}
+	else
+	if (mLogDepth && nullptr != fx_TechWallMaterialLog)
+	{
+		mCurrentLoc = &mWallLogLocations[currentPassId];
+		fx_pass = fx_TechWallMaterialLog->getPass(currentPassId);
+	} 
+}
+
+
+void ProjectorsShaderFX::SetNumberOfProjectors( const int numberOfProjectors )
+{
+	if (fx_numberOfProjectors)
+	{
+		fx_numberOfProjectors->setValue1i( numberOfProjectors );
+	}
+}
+
+void ProjectorsShaderFX::UpdateNumberOfProjectors( const int numberOfProjectors )
+{
+	if (fx_numberOfProjectors && fx_pass)
+	{
+		fx_numberOfProjectors->updateValue1i( numberOfProjectors, fx_pass );
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+// IBLShaderFX
+
+bool IBLShaderFX::OnFindTechnique()
+{
+	fx_TechMaterialLinear = fx_EffectMaterial->findTechnique("CharacterT");
+	if(fx_TechMaterialLinear && (!fx_TechMaterialLinear->validate()))
+        return false;
+
+	// at the moment IBLShaderFX doesn't support logarithmic depth output
+	fx_TechMaterialLog = nullptr;
+
+	//
+	if (nullptr != fx_TechMaterialLinear)
+	{
+		for (int i=0; i<eTechCharacterPass_Count; ++i)
+		{
+			nvFX::IPass *pPass = fx_TechMaterialLinear->getPass(i);
+			mCharacterLocations[i].SetShadersId( BaseShaderFX::nvGetFragmentProgramId( pPass, 0, 0 ),
+											BaseShaderFX::nvGetFragmentProgramId( pPass, 0, 1 ) );
+		}
+	}
+
+	return true;
+}
+
+void ShaderEffect::PrepCharacter_PassAndLocations()
+{
+	ETechCharacterPasses passId = eTechCharacterPass_IBL;
+	if (true == mEyePass)
+		passId = eTechCharacterPass_Eye;
+
+	if (mEarlyZ)
+		passId = eTechCharacterPass_Simple;
+	else if (mNoTextures)
+		passId = eTechCharacterPass_NoTextures;
+
+	mCurrentLoc = &mCharacterLocations[passId];
+	fx_pass = fx_TechCharacter->getPass(passId);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////// SHADER EFFECT
+
+
+
 
 bool ShaderEffect::PrepCommonLocations()
 {
