@@ -4,30 +4,28 @@
 namespace Graphics
 {
 
+	#define PROJSHADER_EFFECT			"ProjectiveMapping.glslfx"
+	#define IBLSHADER_EFFECT			"IBL.glslfx"
+
+	enum
+	{
+		MATERIAL_SHADER_PROJECTORS,
+		MATERIAL_SHADER_IBL,
+		MATERIAL_SHADER_COUNT
+	};
+
 	// flags that helps to choose material technique and pass for drawing
 	enum
 	{
-		eShaderFlag_LogDepth	= 1,
-		eShaderFlag_EarlyZ		= 2,
-		eShaderFlag_NoTextures	= 4,
-		eShaderFlag_Bindless	= 8,
-		eShaderFlag_CubeMapRendering	= 16,
-		eShaderFlag_EyePass		= 32
+		eShaderFlag_LogDepth			= 0x1 << 0,
+		eShaderFlag_EarlyZ				= 0x1 << 1,
+		eShaderFlag_NoTextures			= 0x1 << 2,
+		eShaderFlag_Bindless			= 0x1 << 3,
+		eShaderFlag_CubeMapRendering	= 0x1 << 4,
+		eShaderFlag_EyePass				= 0x1 << 5
 	};
 
-	// depricated!
-	enum EEffectTechnique
-	{
-		eEffectTechniqueShading,
-		eEffectTechniqueSimple,
-		eEffectTechniqueCulling,
-		eEffectTechniqueShadows,
-		eEffectTechniqueNormals,
-		eEffectTechniqueWallMaterial,
-		eEffectTechniqueWallMaterialLog,
-		eEffectTechniqueIBL,
-		eEffectTechniqueCount
-	};
+	
 
 	//
 		enum ETechWallPasses

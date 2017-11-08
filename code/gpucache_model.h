@@ -23,7 +23,7 @@
 #include "shared_camera.h"
 #include "shared_lights.h"
 
-#include "Shader.h"
+#include "ShaderFX.h"
 
 #include <string>
 
@@ -59,13 +59,13 @@ public:
 
 	// TODO: Depricated!
 	void Render(	const CCameraInfoCache &cameraCache, 
-					Graphics::ShaderEffect *const pUberShader, 
+				Graphics::BaseMaterialShaderFX *const pMaterialShader, 
 					//CGPUShaderLights	*const pShaderLights,
 					const bool cubemapSetup, 
 					const CubeMapRenderingData *data );
 
 	void PrepRender(	const CCameraInfoCache &cameraCache, 
-					Graphics::ShaderEffect *const pUberShader, 
+				Graphics::BaseMaterialShaderFX *const pMaterialShader, 
 					//CGPUShaderLights	*const pShaderLights,
 					const bool cubemapSetup, 
 					const CubeMapRenderingData *data );
@@ -74,19 +74,19 @@ public:
 	void UpdateReceiveShadows(const int flag);
 
 	void RenderBegin(	const CCameraInfoCache &cameraCache, 
-					Graphics::ShaderEffect *const pUberShader, 
+					Graphics::BaseMaterialShaderFX *const pMaterialShader, 
 					//CGPUShaderLights	*const pShaderLights,
 					const bool isEarlyZ,
 					const bool cubemapSetup, 
 					const CubeMapRenderingData *data );
 	void RenderOpaque(	const CCameraInfoCache &cameraCache, 
-					Graphics::ShaderEffect *const pUberShader );
+					Graphics::BaseMaterialShaderFX *const pMaterialShader );
 
 	void RenderTransparent(	const CCameraInfoCache &cameraCache, 
-					Graphics::ShaderEffect *const pUberShader );
+					Graphics::BaseMaterialShaderFX *const pMaterialShader );
 
 	void RenderEnd( 	const CCameraInfoCache &cameraCache, 
-					Graphics::ShaderEffect *const pUberShader );
+					Graphics::BaseMaterialShaderFX *const pMaterialShader );
 
 	void DrawGeometry( const CCameraInfoCache &cameraCache );
 
@@ -166,13 +166,14 @@ protected:
 
 	// pre-cached scene information
 	const CCameraInfoCache			*mCameraCache;
-	Graphics::ShaderEffect			*mUberShader;
+	Graphics::BaseMaterialShaderFX	*mMaterialShader;
+	//Graphics::ShaderEffect			*mUberShader;
 	//CGPUShaderLights				*mLights;
 
 	void PassPreRender(const bool cubemapSetup, const CubeMapRenderingData *data=nullptr);
 	void PassLighted(const bool cubemapSetup, const bool opaque, const bool transparency);
 
-	static bool BindUberShader(	Graphics::ShaderEffect *pUberShader,
+	static bool BindUberShader(	Graphics::BaseMaterialShaderFX *pMaterialShader,
 						const bool lockTextures, 
 									CResourceGPUModel<TextureGLSL> *customTextures, 
 									CResourceGPUModel<MaterialGLSL> *customMaterials, 
@@ -181,7 +182,7 @@ protected:
 									vec4 globalAmbientColor,
 									const bool shadowTechnique);
 
-	static void UnBindUberShader( Graphics::ShaderEffect *pUberShader,
+	static void UnBindUberShader( Graphics::BaseMaterialShaderFX *pMaterialShader,
 							const bool unlockTextures, 
 							CResourceGPUModel<TextureGLSL> *customTextures, 
 							const bool shadowTechnique);

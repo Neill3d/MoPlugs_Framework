@@ -100,8 +100,8 @@
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\Work\TestApp\nvFX\build2\lib\Release;..\glew-1.10.0\lib\Release\Win32;..\nvExtensions\lib\vs2010x86;..\SceneGraph_Shared\lib;D:\Work\_MIDDLEWARE\glfw-3.1.1\build\src;$(LibraryPath)</LibraryPath>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\bin\$(Platform)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectName).dir\Debug\$(Platform)\</IntDir>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\nvFX\include;..\..\glew\include;..\code\;..\Include;..\external\glm-0.9.5.3;..\..\glfw\include;$(IncludePath)</IncludePath>
-    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\nvFX\build\lib\Debug;..\..\glew\lib\Release\x64;..\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOPLUGS_EXTERNAL)\nvFX\include;$(MOPLUGS_EXTERNAL)\glew\include;..\code\;..\Include;$(MOPLUGS_EXTERNAL)\glm-0.9.6.3;$(MOPLUGS_EXTERNAL)\glfw\include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(MOPLUGS_EXTERNAL)\nvFX\build2\lib\Release;$(MOPLUGS_EXTERNAL)\glew\lib\Release\x64;..\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -286,13 +286,13 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Link>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;glu32.lib;FxLib64D.lib;FxLibGL64D.lib;FxParser64D.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;glu32.lib;FxLib64.lib;FxLibGL64.lib;FxParser64.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
     </Link>
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Debug";GLEW_STATIC;_HAS_ITERATOR_DEBUGGING=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Debug";GLEW_STATIC;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>

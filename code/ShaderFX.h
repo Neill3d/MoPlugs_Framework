@@ -27,6 +27,7 @@
 #include <vector>
 //#include "nv_math.h"
 #include <map>
+#include <functional>
 
 //-------------- Effect system
 #include "FxParser.h"
@@ -42,10 +43,12 @@
 
 #define kMaxDrawInstancedSize  100
 
+#define IsShader( Component,ComponentType ) \
+	((Component) && (Component)->Is( ComponentType::TypeInfo ))
+
 namespace Graphics
 {
 
-	
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Base nvFX Shader class
@@ -77,6 +80,8 @@ namespace Graphics
 		virtual const GLuint		GetFragmentProgramId();
 		virtual const GLuint		FindFragmentProgramLocation(const char *name);
 
+		
+
 	protected:
 
 		static void ShowError(const char* pText);
@@ -100,7 +105,7 @@ namespace Graphics
         virtual void UnBindShaderPrograms(); 		
 		
 		virtual bool	InitializeEffectParams();
-		virtual bool	PrepCommonLocations();
+		virtual int	PrepCommonLocations();
 
 		static const GLuint	nvGetFragmentProgramId(nvFX::IPass *pass, const int programPipeline, const int shaderProgram);
 
@@ -156,7 +161,7 @@ namespace Graphics
 		GLint				mShadowsDisplaySamplerLoc;
 
 		virtual bool	InitializeEffectParams();
-		virtual bool	PrepCommonLocations();
+		virtual int	PrepCommonLocations();
 	};
 
 	
@@ -168,6 +173,12 @@ namespace Graphics
 
 		//! a constructor
 		CustomShaderLocations();
+		//! a destructor
+		virtual ~CustomShaderLocations();
+
+		void SetCapacity(const size_t size);
+
+		void AssignLocationName(const GLint index, const char *locationName);
 
 		// return a new location enum id
 		GLint RegisterNewLocation(const char *locationName);
@@ -181,21 +192,26 @@ namespace Graphics
 		const GLint GetShaderId() const;
 
 		// return a number of prepared/finded (glGetUniformLocation) locations
-		int Prep();
+		const int Prep();
 
 		virtual int PrepDefaultSamplerSlots();
 
 		bool SetUniform1i(const CustomFragmentShaderLocation location, const GLint value) const;
-		bool SetUniform1f(const CustomFragmentShaderLocation location, const float value) const;
+		bool SetUniform1f(const GLint locationIndex, const float value) const;
 		
 		const GLint GetSamplerSlot(const CustomFragmentShaderLocation location) const;
+
+		const GLint GetLocation( const GLint index ) const;
+		const GLint GetLocation( const char *locationName ) const;
+
+		void Clear();
 
 	protected:
 		//
 		GLint						mShader;
 		
-		std::vector<GLint>			mLocations; // for a new location, it's id in shader
-		std::vector<std::string>	mLocationNames;
+		std::vector<GLint>				mLocations; // for a new location, it's id in shader
+		std::vector<SimpleString<32>>	mLocationNames;
 
 		// store default samplers values for fragment locations
 		std::map<GLint, GLint>		mSamplers;
@@ -277,7 +293,7 @@ namespace Graphics
 
 		//	change depth algorithm ( linear or logarithmic )
 
-		EEffectTechnique	mCurrentTech;
+		//EEffectTechnique	mCurrentTech;
 
 		//
 		nvFX::ITechnique	*fx_TechMaterialLinear;	// with a linear depth
@@ -315,12 +331,18 @@ namespace Graphics
 		//
 
 		virtual bool	InitializeEffectParams();
-		virtual bool	PrepCommonLocations();
+		virtual int	PrepCommonLocations() override;
 
 		bool validateAndCreateSceneInstances();
 
-		virtual bool	OnFindTechnique();
+		virtual bool	OnFindTechnique()
+		{ return false;}
 
+		virtual void	AllocLocations()
+		{}
+		virtual int		PrepLocations()
+		{ return 0; }
+		
 	protected:
 		//
 
@@ -329,11 +351,32 @@ namespace Graphics
 
 		struct EffectLocations
 		{
-			CustomShaderLocations	*vertex;
-			CustomShaderLocations	*fragment;
+		public:
+			CustomShaderLocations *vptr() {
+				return vertex.get();
+			}
+			const CustomShaderLocations *vptr() const {
+				return vertex.get();
+			}
+			CustomShaderLocations *fptr() {
+				return fragment.get();
+			}
+			const CustomShaderLocations *fptr() const {
+				return fragment.get();
+			}
+
+			void reset(CustomShaderLocations *_vertex, CustomShaderLocations *_fragment)
+			{
+				vertex.reset(_vertex);
+				fragment.reset(_fragment);
+			}
+
+		protected:
+			std::auto_ptr<CustomShaderLocations>	vertex;
+			std::auto_ptr<CustomShaderLocations>	fragment;
 		};
 
-		EffectLocations			mCurrentLoc;
+		EffectLocations			*mCurrentLoc;
 
 		bool		PrepLogDepth();
 
@@ -347,6 +390,10 @@ namespace Graphics
 
 		// on destructor
 		virtual void	Free();
+
+		//virtual int GetType() const = 0;
+		static int TypeInfo;
+		virtual bool Is( int typeInfo );
 
 		virtual void		Bind();
 		
@@ -398,16 +445,18 @@ namespace Graphics
 		void	DefaultShaderFlags();
 		void	SetShaderFlags( unsigned int flags );
 		void	ModifyShaderFlags( unsigned int flags, bool activate );
-		
-		void	SetTechnique( const EEffectTechnique technique );
-		void	PrepCurrentTech();
+		bool	HasShaderFlag( unsigned int flag );
+
+		//
+		//
+		virtual void	PrepTechAndPass();
 
 
 		// Upload ModelView Matrix Array for Draw Instanced.
         void UploadModelViewMatrixArrayForDrawInstanced(const double* pModelViewMatrixArray, int pCount);
 	
 		// return set of locations according to current bindless and logarithmic state
-		const EffectLocations GetCurrentEffectLocationsPtr() const
+		const EffectLocations *GetCurrentEffectLocationsPtr() const
 		{
 			return mCurrentLoc;
 		}
@@ -443,8 +492,8 @@ namespace Graphics
 	{
 	protected:
 
-		CustomEffectShaderLocations		mWallLocations[eTechWallPass_Count];
-		CustomEffectShaderLocations		mWallLogLocations[eTechWallPass_Count];
+		EffectLocations					mWallLocations[eTechWallPass_Count];
+		EffectLocations					mWallLogLocations[eTechWallPass_Count];
 
 		// TODO: depricated ?!
 		nvFX::ITechnique	*fx_TechShadow;
@@ -461,47 +510,326 @@ namespace Graphics
 
 		virtual bool	OnFindTechnique() override;
 
-	protected:
-
-		// depricated
-		CustomEffectShaderLocations		mShadowLoc;
-
-
+		virtual int		PrepLocations() override;
+		
 	public:
 
-		void	PrepWall_PassAndLocations();
-		
+		//! a constructor
+		ProjectorsShaderFX();
+		// a destructor
+		virtual ~ProjectorsShaderFX();
+
+		static int TypeInfo;
+		virtual bool Is( int typeInfo ) override;
+
+		virtual void	PrepTechAndPass() override;
+
+		virtual void		Bind() override;
 
 		void	SetNumberOfProjectors( const int numberOfProjectors );
 		void	UpdateNumberOfProjectors( const int numberOfProjectors );
 	
-
-		void	SetBindless( const bool value );
-		const bool  IsBindless() { return mBindless; }
 	};
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	// IBL PBS, eye shader, eye lashes, skin shader
 
+	struct IBLVertexLocations : public CustomShaderLocations
+	{
+	public:
+		// a constructor
+		IBLVertexLocations();
+	};
+
+	struct IBLFragmentLocations : public CustomShaderLocations
+	{
+	public:
+		// a constructor
+		IBLFragmentLocations();
+
+		//virtual int PrepDefaultSamplerSlots() override;
+	};
+
 	class IBLShaderFX : public BaseMaterialShaderFX
 	{
 	protected:
 
-		CustomEffectShaderLocations		mCharacterLocations[eTechCharacterPass_Count];
+		EffectLocations		mCharacterLocations[eTechCharacterPass_Count];
 
 		virtual bool	OnFindTechnique() override;
-
+		
 	public:
 
-		void	PrepCharacter_PassAndLocations();
+		// a constructor
+		IBLShaderFX();
 
-		void SetEyePass( const bool value );
-		const bool IsEyePass() const {return mEyePass; }
+		static int TypeInfo;
+		virtual bool Is( int typeInfo ) override;
 
-
-		const CustomEffectShaderLocations *GetIBLPassLocationsPtr(const ETechCharacterPasses passId) const
+		virtual void	PrepTechAndPass() override;
+		
+		const EffectLocations *GetIBLPassLocationsPtr(const ETechCharacterPasses passId) const
 		{
 			return &mCharacterLocations[passId];
 		}
 	};
+
+///////////////////////////////////////////////////
+// MaterialShader
+
+struct MaterialShader
+{
+public:
+	//! a constructor
+	MaterialShader()
+	{
+		mNeedUpdate = false;
+	}
+
+	const bool IsUpdateNeeded() const {
+		return mNeedUpdate;
+	}
+
+	void NeedUpdate() {
+		mNeedUpdate = true;
+	}
+
+	void ModifyUpdateFlag(const bool value) {
+		mNeedUpdate = value;
+	}
+
+	Graphics::BaseMaterialShaderFX *operator -> () {
+		return mShader.get();
+	}
+
+	const bool IsOk() const {
+		return (nullptr != mShader.get() );
+	}
+
+	Graphics::BaseMaterialShaderFX *Get() const {
+		return mShader.get();
+	}
+
+	void Clear() {
+		mNeedUpdate = false;
+		mShader.reset(nullptr);
+	}
+
+	void Reset(Graphics::BaseMaterialShaderFX *ptr) {
+		mShader.reset(ptr);
+	}
+
+protected:
+	bool mNeedUpdate;
+	std::auto_ptr<Graphics::BaseMaterialShaderFX>		mShader;
+};
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+
+struct MaterialShaderManager
+{
+public:
+
+	//! a constructor
+	MaterialShaderManager()
+	{
+		mLogDepth = false;
+		mCurrent = MATERIAL_SHADER_IBL;
+	}
+
+	void SetEffectStoragePath(const char *path)
+	{
+		mEffectPath = path;
+	}
+
+	void SetLogarithmicDepth(const bool value)
+	{
+		mLogDepth = value;
+
+		for (int i=0; i<MATERIAL_SHADER_COUNT; ++i)
+		{
+			if (mMaterialShaders[i].IsOk() )
+				mMaterialShaders[i]->ModifyShaderFlags( Graphics::eShaderFlag_LogDepth, value );
+		}
+	}
+
+	void EvaluateOnShader( std::function<void(Graphics::BaseMaterialShaderFX*)> f )
+	{
+		for (int i=0; i<MATERIAL_SHADER_COUNT; ++i)
+		{
+			if (mMaterialShaders[i].IsOk() )
+				f(mMaterialShaders[i].Get() );
+		}
+	}
+
+	void Clear()
+	{
+		for (int i=0; i<MATERIAL_SHADER_COUNT; ++i)
+		{
+			mMaterialShaders[i].Clear();
+		}
+	}
+
+	// load only needed shaders, skip others
+	bool LoadShaders()
+	{
+		bool lSuccess = true;
+		lSuccess |= LoadProjectorsShaderFX();
+		lSuccess |= LoadIBLShaderFX();
+			
+		return lSuccess;
+	}
+
+	void SetCurrent(const int index) {
+		mCurrent = index;
+	}
+
+	const bool IsUpdateNeeded() const {
+		if (mCurrent >= 0 && mCurrent < MATERIAL_SHADER_COUNT)
+			return mMaterialShaders[mCurrent].IsUpdateNeeded();
+		return false;
+	}
+
+	void NeedUpdate() {
+		if (mCurrent >= 0 && mCurrent < MATERIAL_SHADER_COUNT)
+			mMaterialShaders[mCurrent].NeedUpdate();
+	}
+
+	void ModifyUpdateFlag(const bool value) {
+		if (mCurrent >= 0 && mCurrent < MATERIAL_SHADER_COUNT)
+			mMaterialShaders[mCurrent].ModifyUpdateFlag(value);
+	}
+
+	Graphics::BaseMaterialShaderFX *operator -> () {
+		if (mCurrent >= 0 && mCurrent < MATERIAL_SHADER_COUNT)
+			return mMaterialShaders[mCurrent].Get();
+		return nullptr;
+	}
+
+	const bool IsOk() const {
+		if (mCurrent >= 0 && mCurrent < MATERIAL_SHADER_COUNT)
+			return mMaterialShaders[mCurrent].IsOk();
+		return false;
+	}
+
+	Graphics::BaseMaterialShaderFX *Get() const {
+		if (mCurrent >= 0 && mCurrent < MATERIAL_SHADER_COUNT)
+			return mMaterialShaders[mCurrent].Get();
+		return nullptr;
+	}
+
+protected:
+
+	std::string									mEffectPath;
+
+	int											mCurrent;
+
+	bool										mLogDepth;
+	//bool										mNeedUpdateFlags[MATERIAL_SHADER_COUNT];
+	MaterialShader								mMaterialShaders[MATERIAL_SHADER_COUNT];
+
+	bool LoadProjectorsShaderFX()
+	{
+		MaterialShader &materialshader = mMaterialShaders[MATERIAL_SHADER_PROJECTORS];
+		bool lSuccess = true; // materialshader.IsOk();
+
+		if ( true == materialshader.IsUpdateNeeded() 
+			&& false == materialshader.IsOk() )
+		{
+			// try to load
+			Graphics::ProjectorsShaderFX	*pEffects = nullptr;
+
+			try
+			{
+				if ( 0 == mEffectPath.size() )
+					throw std::exception( "effect path is not assigned!" );
+
+				pEffects =  new Graphics::ProjectorsShaderFX();
+				if( !pEffects->Initialize( mEffectPath.c_str(), PROJSHADER_EFFECT, 512, 512, 1.0) )
+					throw std::exception( "Failed to initialize a Projectors shader!\n" );
+				
+				// do a test locations query
+				pEffects->ModifyShaderFlags( Graphics::eShaderFlag_Bindless, false );
+				pEffects->ModifyShaderFlags( Graphics::eShaderFlag_CubeMapRendering, false );
+				pEffects->PrepTechAndPass();
+
+				const auto loc = pEffects->GetCurrentEffectLocationsPtr()->fptr();
+				GLint locTexture = loc->GetLocation(Graphics::eCustomLocationAllTheTextures);
+				GLint locMaterial = loc->GetLocation(Graphics::eCustomLocationAllTheMaterials);
+				GLint locShader = loc->GetLocation(Graphics::eCustomLocationAllTheShaders);
+				GLint locProjectors = loc->GetLocation(Graphics::eCustomLocationAllTheProjectors);
+
+				if (locTexture < 0 || locMaterial < 0 || locShader < 0 || locProjectors < 0)
+					throw std::exception( "Failed to locate all common unifroms in projectors shader" );
+
+				CHECK_GL_ERROR();
+
+				//mLastContext = wglGetCurrentContext();
+				materialshader.Reset(pEffects);
+				lSuccess = true;
+			}
+			catch (const std::exception &e )
+			{
+				printf( "[Graphics ERROR]: %s\n", e.what() );
+				materialshader.ModifyUpdateFlag(false);
+				FREEANDNIL(pEffects);
+				lSuccess = false;
+			}
+		}
+		return lSuccess;
+	}
+
+	bool LoadIBLShaderFX()
+	{
+		MaterialShader &materialshader = mMaterialShaders[MATERIAL_SHADER_IBL];
+		bool lSuccess = true; // materialshader.IsOk();
+
+		if ( true == materialshader.IsUpdateNeeded() 
+			&& false == materialshader.IsOk() )
+		{
+			// try to load
+			Graphics::IBLShaderFX	*pEffects = nullptr;
+
+			try
+			{
+				if ( 0 == mEffectPath.size() )
+					throw std::exception( "effect path is not assigned!" );
+
+				pEffects =  new Graphics::IBLShaderFX();
+				if( !pEffects->Initialize( mEffectPath.c_str(), IBLSHADER_EFFECT, 512, 512, 1.0) )
+					throw std::exception( "Failed to initialize an IBL shader!\n" );
+				
+				// do a test locations query
+				pEffects->ModifyShaderFlags( Graphics::eShaderFlag_Bindless, false );
+				pEffects->ModifyShaderFlags( Graphics::eShaderFlag_CubeMapRendering, false );
+				pEffects->PrepTechAndPass();
+
+				const auto loc = pEffects->GetCurrentEffectLocationsPtr()->fptr();
+				GLint locTexture = loc->GetLocation(Graphics::eCustomLocationAllTheTextures);
+				GLint locMaterial = loc->GetLocation(Graphics::eCustomLocationAllTheMaterials);
+				GLint locShader = loc->GetLocation(Graphics::eCustomLocationAllTheShaders);
+				
+				if (locTexture < 0 || locMaterial < 0 || locShader < 0)
+					throw std::exception( "Failed to locate all common unifroms in IBL shader" );
+
+				CHECK_GL_ERROR();
+
+				//mLastContext = wglGetCurrentContext();
+				materialshader.Reset(pEffects);
+				lSuccess = true;
+			}
+			catch (const std::exception &e )
+			{
+				printf( "[Graphics ERROR]: %s\n", e.what() );
+				materialshader.ModifyUpdateFlag(false);
+				FREEANDNIL(pEffects);
+				lSuccess = false;
+			}
+		}
+		return lSuccess;
+	}
+};
+
 }

@@ -23,7 +23,7 @@
 #include "getopt.h"
 
 #include "gpucache_visitorImpl.h"
-#include "Shader.h"
+#include "ShaderFX.h"
 #include "shared_camera.h"
 #include "gpucache_model.h"
 #include "gpucache_loader.h"
@@ -52,9 +52,9 @@ mat4						m_projectionMatrix;
 mat4						m_modelMatrix;
 CCameraInfoCache			mCameraCache;
 
-Graphics::ShaderEffect		*mUberShader = nullptr;
-CGPUCacheModel				*mCacheModel = nullptr;
-CGPULightsManager			mLightManager;
+Graphics::BaseMaterialShaderFX		*mShaderFX = nullptr;
+CGPUCacheModel						*mCacheModel = nullptr;
+CGPULightsManager					mLightManager;
 
 //
 bool loadModel(const char *filename);
@@ -136,25 +136,25 @@ void draw(float time)
 
 	mLightManager.Prep( mCameraCache, nullptr );
 
-	if (mCacheModel && mUberShader)
+	if (mCacheModel && mShaderFX)
 	{
-		mUberShader->UploadCameraUniforms(mCameraCache);
+		mShaderFX->UploadCameraUniforms(mCameraCache);
 
-		mUberShader->SetNumberOfProjectors(0);
-		mUberShader->UploadModelTransform( mat4(array16_id) );
+		//mUberShader->SetNumberOfProjectors(0);
+		mShaderFX->UploadModelTransform( mat4(array16_id) );
 	
-		mUberShader->UploadLightingInformation( false,
+		mShaderFX->UploadLightingInformation( false,
 				vec4(0.3f, 0.3f, 0.3f, 0.0f), 
 				0, 0);
 
 		// models normal matrix update, according to camera modelview
-		mCacheModel->PrepRender( mCameraCache, mUberShader, false, nullptr);
+		mCacheModel->PrepRender( mCameraCache, mShaderFX, false, nullptr);
 
-		mCacheModel->RenderBegin( mCameraCache, mUberShader, false, 
+		mCacheModel->RenderBegin( mCameraCache, mShaderFX, false, 
 		 false, nullptr );
 	
-		mCacheModel->RenderOpaque( mCameraCache, mUberShader );
-		mCacheModel->RenderEnd( mCameraCache, mUberShader);
+		mCacheModel->RenderOpaque( mCameraCache, mShaderFX );
+		mCacheModel->RenderEnd( mCameraCache, mShaderFX);
 		
 		CHECK_GL_ERROR();
 	}
@@ -208,22 +208,17 @@ std::string getEnvVar( std::string const &key )
 
 bool loadShader()
 {
-	if (mUberShader)
-	{
-		delete mUberShader;
-		mUberShader = nullptr;
-	}
-
+	FREEANDNIL(mShaderFX);
+	
 	//
-	mUberShader = new Graphics::ShaderEffect();
+	mShaderFX = new Graphics::ProjectorsShaderFX();
 	// "D:\\Work\\MOPLUGS\\_Plugins\\GLSLFX\\"
 	//const std::string envVar (getEnvVar( MOPLUGS_SYS_ENV ));
-	const std::string envVar ("D:\\Work\\MOPLUGS_TheWALL\\_Plugins\\GLSLFX\\");
+	const std::string envVar ("D:\\My Documents\\GitHub\\MoPlugs\\Projects\\mo_graphics\\GLSL_FX\\");
 	
-	if( !mUberShader->Initialize( envVar.c_str(), UBERSHADER_EFFECT, 512, 512, 1.0) )
+	if( !mShaderFX->Initialize( envVar.c_str(), UBERSHADER_EFFECT, 512, 512, 1.0) )
 	{
-		delete mUberShader;
-		mUberShader = nullptr;
+		FREEANDNIL(mShaderFX);
 		return false;
 	}
 
@@ -234,16 +229,9 @@ bool loadShader()
 
 bool freeResources()
 {
-	if (mCacheModel)
-	{
-		delete mCacheModel;
-		mCacheModel = nullptr;
-	}
-	if (mUberShader)
-	{
-		delete mUberShader;
-		mUberShader = nullptr;
-	}
+	FREEANDNIL(mCacheModel);
+	FREEANDNIL(mShaderFX);
+	
 	return true;
 }
 

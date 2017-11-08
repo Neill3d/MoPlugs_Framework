@@ -1,7 +1,7 @@
 
 /**
 	Declare common engine types and macros.
-    Copyright (C) 2010 Sergey Solohin (neill), e-mail to: Neill.Solow<at>gmail.com
+    Copyright (C) 2010 Sergey Solokhin (neill), e-mail to: Neill.Solow<at>gmail.com
 	home page - neill3d.com
 
     This program is free software: you can redistribute it and/or modify
@@ -174,5 +174,53 @@ inline uint2 operator - (const uint2 &a, const unsigned int b)
 	result.y = a.y - b;
 	return result;
 }
+
+///////////////////////////////////////////////////////////////////
+//
+
+template <int N>
+struct SimpleString
+{
+	SimpleString()
+	{
+		for (int i=0; i<N; ++i)
+			text[i] = 0;
+	}
+	SimpleString(const SimpleString &str)
+	{
+		for (int i=0; i<N; ++i)
+			text[i] = str.text[i];
+	}
+	SimpleString(const char *str)
+	{
+		size_t len = strlen(str);
+		len = std::min(len, (size_t)N);
+
+		for (int i=0; i<len; ++i)
+			text[i] = str[i];
+		for (int i=len; i<N; ++i)
+			text[i] = 0;
+	}
+
+	SimpleString &operator = (const char *str)
+	{
+		size_t len = strlen(str);
+		len = std::min(len, (size_t)N);
+
+		for (int i=0; i<len; ++i)
+			text[i] = str[i];
+		for (int i=len; i<N; ++i)
+			text[i] = 0;
+
+		return *this;
+	}
+
+	const char *c_str() const {
+		return text;
+	}
+
+protected:
+	char		text[N];
+};
 
 #endif // _TYPES_H_

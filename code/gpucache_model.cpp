@@ -30,7 +30,7 @@ CGPUCacheModel::CGPUCacheModel()
 	mVertexData = nullptr;
 
 	// external assignment
-	mUberShader = nullptr;
+	mMaterialShader = nullptr;
 	mCameraCache = nullptr;
 
 	// properties
@@ -94,15 +94,15 @@ void CGPUCacheModel::Free()
 }
 
 void CGPUCacheModel::Render( const CCameraInfoCache &cameraCache, 
-					Graphics::ShaderEffect *const pUberShader, 
+					Graphics::BaseMaterialShaderFX *const pMaterialShader, 
 					//CGPUShaderLights	*const pShaderLights,
 					const bool cubemapSetup, 
 					const CubeMapRenderingData *data )
 {
-	if (pUberShader == nullptr)
+	if (pMaterialShader == nullptr)
 		return;
 
-	mUberShader = pUberShader;
+	mMaterialShader = pMaterialShader;
 	mCameraCache = &cameraCache;
 	//mLights = pShaderLights;
 	/*
@@ -139,7 +139,7 @@ void CGPUCacheModel::Render( const CCameraInfoCache &cameraCache,
 }
 
 void CGPUCacheModel::PrepRender( const CCameraInfoCache &cameraCache, 
-					Graphics::ShaderEffect *const pUberShader, 
+					Graphics::BaseMaterialShaderFX *const pUberShader, 
 					//CGPUShaderLights	*const pShaderLights,
 					const bool cubemapSetup, 
 					const CubeMapRenderingData *data )
@@ -147,7 +147,7 @@ void CGPUCacheModel::PrepRender( const CCameraInfoCache &cameraCache,
 	if (pUberShader == nullptr)
 		return;
 
-	mUberShader = pUberShader;
+	mMaterialShader = pUberShader;
 	mCameraCache = &cameraCache;
 	//mLights = pShaderLights;
 	/*
@@ -212,7 +212,7 @@ void CGPUCacheModel::UpdateReceiveShadows(const int flag)
 }
 
 void CGPUCacheModel::RenderBegin( const CCameraInfoCache &cameraCache, 
-					Graphics::ShaderEffect *const pUberShader, 
+					Graphics::BaseMaterialShaderFX *const pUberShader, 
 					//CGPUShaderLights	*const pShaderLights,
 					const bool isEarlyZ,
 					const bool cubemapSetup, 
@@ -221,7 +221,7 @@ void CGPUCacheModel::RenderBegin( const CCameraInfoCache &cameraCache,
 	if (nullptr == pUberShader || nullptr == mModelRender)
 		return;
 
-	mUberShader = pUberShader;
+	mMaterialShader = pUberShader;
 
 	//mat4 m; 
 	//m.identity();
@@ -261,18 +261,21 @@ void CGPUCacheModel::RenderBegin( const CCameraInfoCache &cameraCache,
 	}
 	*/
 
-	mUberShader->UploadModelTransform(m4_parent);
+	mMaterialShader->UploadModelTransform(m4_parent);
 	
-	mUberShader->SetBindless(true);
-	mUberShader->SetEarlyZ(isEarlyZ);
+	mMaterialShader->ModifyShaderFlags( Graphics::eShaderFlag_Bindless, true );
+	mMaterialShader->ModifyShaderFlags( Graphics::eShaderFlag_EarlyZ, isEarlyZ );
+
 	//mUberShader->SetCubeMapRendering(cubemapSetup);
 	//mUberShader->SetLogarithmicDepth( LogarithmicDepth );
-	mUberShader->SetNumberOfProjectors(0);
+	//mMaterialShader->SetNumberOfProjectors(0);
 	
-	BindUberShader(mUberShader, true, mTextures, mMaterials, mShaders, vec4(0.1f, 0.1f, 0.1f, 0.0f), false);
+	BindUberShader(mMaterialShader, true, mTextures, mMaterials, mShaders, vec4(0.1f, 0.1f, 0.1f, 0.0f), false);
 	
 	// DONE: subroutines for blending modes
 	// set subroutine values
+	// TODO: this is a part of shaderFX bind method
+	/*
 	if (false == isEarlyZ)
 	{
 		GLuint index[30];
@@ -299,22 +302,20 @@ void CGPUCacheModel::RenderBegin( const CCameraInfoCache &cameraCache,
 
 		CHECK_GL_ERROR();
 	}
-	
+	*/
 	if (mModelRender->RenderBegin() )
 	{
-		
-		const Graphics::CustomEffectShaderLocations *locPtr = mUberShader->GetCustomEffectShaderLocationsPtr();
-		mModelRender->BindModelInfoAsUniform( mUberShader->GetVertexProgramId(), locPtr->GetVertexLocation(Graphics::eCustomVertexLocationAllTheModels) );
-		mModelRender->BindMeshInfoAsUniform( mUberShader->GetVertexProgramId(), locPtr->GetVertexLocation(Graphics::eCustomVertexLocationAllTheMeshes) );
-		
+		auto locPtr = mMaterialShader->GetCurrentEffectLocationsPtr()->vptr();
+		mModelRender->BindModelInfoAsUniform( locPtr->GetShaderId(), locPtr->GetLocation(Graphics::eCustomVertexLocationAllTheModels) );
+		mModelRender->BindMeshInfoAsUniform( locPtr->GetShaderId(), locPtr->GetLocation(Graphics::eCustomVertexLocationAllTheMeshes) );	
 	}
 }
 
 void CGPUCacheModel::RenderOpaque( const CCameraInfoCache &cameraCache, 
-					Graphics::ShaderEffect *const pUberShader )
+					Graphics::BaseMaterialShaderFX *const pUberShader )
 {
 	// opaque
-	mUberShader = pUberShader;
+	mMaterialShader = pUberShader;
 	if ( mNumberOfOpaque > 0)
 	{
 		//mUberShader->UpdateAlphaPass(0.0f);
@@ -324,10 +325,10 @@ void CGPUCacheModel::RenderOpaque( const CCameraInfoCache &cameraCache,
 }
 
 void CGPUCacheModel::RenderTransparent( const CCameraInfoCache &cameraCache, 
-					Graphics::ShaderEffect *const pUberShader )
+					Graphics::BaseMaterialShaderFX *const pUberShader )
 {
 	// draw transparency (sort objects ?!)
-	mUberShader = pUberShader;
+	mMaterialShader = pUberShader;
 	if ( mNumberOfTransparency > 0)
 	{
 
@@ -338,18 +339,18 @@ void CGPUCacheModel::RenderTransparent( const CCameraInfoCache &cameraCache,
 }
 
 void CGPUCacheModel::RenderEnd( const CCameraInfoCache &cameraCache, 
-					Graphics::ShaderEffect *const pUberShader )
+					Graphics::BaseMaterialShaderFX *const pUberShader )
 {
 	if (nullptr == pUberShader || nullptr == mModelRender)
 		return;
 
-	mUberShader = pUberShader;
+	mMaterialShader = pUberShader;
 
 	//
 	mModelRender->RenderEnd();
 	CHECK_GL_ERROR();
 
-	UnBindUberShader(mUberShader, true, mTextures, false);
+	UnBindUberShader(mMaterialShader, true, mTextures, false);
 
 	CHECK_GL_ERROR();
 }
@@ -365,14 +366,14 @@ void CGPUCacheModel::PassPreRender(const bool cubemapSetup, const CubeMapRenderi
 		cameraMV.identity();
 		cameraMV.set_translation( -cubemap->position );
 		*/
-		mUberShader->UploadCubeMapUniforms(	cubemap->zmin, 
+		mMaterialShader->UploadCubeMapUniforms(	cubemap->zmin, 
 											cubemap->zmax, 
 											cubemap->worldToLocal,
 											cubemap->position,
 											cubemap->max, 
 											cubemap->min, 
 											cubemap->useParallax);
-		mUberShader->SetCubeMapRendering(true);
+		mMaterialShader->ModifyShaderFlags( Graphics::eShaderFlag_CubeMapRendering, true );
 
 		// TODO: 
 		/*
@@ -391,15 +392,14 @@ void CGPUCacheModel::PassPreRender(const bool cubemapSetup, const CubeMapRenderi
 	}
 	else
 	{
-		mUberShader->SetCubeMapRendering(false);
-		
+		mMaterialShader->ModifyShaderFlags( Graphics::eShaderFlag_CubeMapRendering, false );
 	}
 
-	mUberShader->UploadCameraUniforms( *mCameraCache );
+	mMaterialShader->UploadCameraUniforms( *mCameraCache );
 }
 
 
-bool CGPUCacheModel::BindUberShader(	Graphics::ShaderEffect *pUberShader,
+bool CGPUCacheModel::BindUberShader(	Graphics::BaseMaterialShaderFX *pMaterialShader,
 						const bool lockTextures, 
 									CResourceGPUModel<TextureGLSL> *customTextures, 
 									CResourceGPUModel<MaterialGLSL> *customMaterials, 
@@ -408,7 +408,7 @@ bool CGPUCacheModel::BindUberShader(	Graphics::ShaderEffect *pUberShader,
 									vec4 globalAmbientColor,
 									const bool shadowTechnique)
 {
-	if (pUberShader == nullptr) 
+	if (pMaterialShader == nullptr) 
 		return false;
 	/*
 #ifdef _DEBUG
@@ -431,6 +431,7 @@ bool CGPUCacheModel::BindUberShader(	Graphics::ShaderEffect *pUberShader,
 	}
 	*/
 	// bind effect
+	/*
 	if (shadowTechnique == true)
 	{
 		pUberShader->SetTechnique(Graphics::eEffectTechniqueShadows);
@@ -439,12 +440,13 @@ bool CGPUCacheModel::BindUberShader(	Graphics::ShaderEffect *pUberShader,
 	{
 		pUberShader->SetTechnique(Graphics::eEffectTechniqueShading);
 	}
-	pUberShader->Bind();
+	*/
+	pMaterialShader->Bind();
 
-	const GLuint fragmentProgram = pUberShader->GetFragmentProgramId();
+	const GLuint fragmentProgram = pMaterialShader->GetFragmentProgramId();
 	if (fragmentProgram > 0)
 	{
-		const Graphics::CustomEffectShaderLocations *locPtr = pUberShader->GetCustomEffectShaderLocationsPtr();
+		auto locPtr = pMaterialShader->GetCurrentEffectLocationsPtr()->fptr();
 		/*
 		if (pShaderLights != nullptr && shadowTechnique == false )
 			pShaderLights->Bind(fragmentProgram, locPtr->dirLights, locPtr->lights );
@@ -453,16 +455,16 @@ bool CGPUCacheModel::BindUberShader(	Graphics::ShaderEffect *pUberShader,
 		if (customShaders)
 		{
 			//customShaders->BindAsUniform(locPtr->vertex, locPtr->allTheShadersV);
-			customShaders->BindAsUniform(fragmentProgram, locPtr->GetFragmentLocation(Graphics::eCustomLocationAllTheShaders));
+			customShaders->BindAsUniform(fragmentProgram, locPtr->GetLocation(Graphics::eCustomLocationAllTheShaders));
 		}
 		
 		// DONE: check what is it !??!
 
 		if (customTextures)
-			customTextures->BindAsUniform(fragmentProgram, locPtr->GetFragmentLocation(Graphics::eCustomLocationAllTheTextures));
+			customTextures->BindAsUniform(fragmentProgram, locPtr->GetLocation(Graphics::eCustomLocationAllTheTextures));
 		
 		if (customMaterials)
-			customMaterials->BindAsUniform(fragmentProgram, locPtr->GetFragmentLocation(Graphics::eCustomLocationAllTheMaterials));
+			customMaterials->BindAsUniform(fragmentProgram, locPtr->GetLocation(Graphics::eCustomLocationAllTheMaterials));
 	}
 
 	//
@@ -475,7 +477,7 @@ bool CGPUCacheModel::BindUberShader(	Graphics::ShaderEffect *pUberShader,
 	return true;
 }
 
-void CGPUCacheModel::UnBindUberShader( Graphics::ShaderEffect *pUberShader,
+void CGPUCacheModel::UnBindUberShader( Graphics::BaseMaterialShaderFX *pUberShader,
 										const bool unlockTextures, 
 										CResourceGPUModel<TextureGLSL> *customTextures, 
 										const bool shadowTechnique)
@@ -501,7 +503,7 @@ void CGPUCacheModel::UnBindUberShader( Graphics::ShaderEffect *pUberShader,
 
 void CGPUCacheModel::PassLighted(const bool cubemapSetup, const bool opaque, const bool transparency)
 {
-	if (!mUberShader || !mModelRender)
+	if (!mMaterialShader || !mModelRender)
 		return;
 
 	//mat4 m; 
@@ -512,16 +514,17 @@ void CGPUCacheModel::PassLighted(const bool cubemapSetup, const bool opaque, con
 
 	//
 
-	mUberShader->UploadCameraUniforms(&realfarplane);
-	mUberShader->UploadModelTransform(m4_parent);
+	mMaterialShader->UploadCameraUniforms(&realfarplane);
+	mMaterialShader->UploadModelTransform(m4_parent);
 	
-	mUberShader->SetBindless(true);
-	mUberShader->SetEarlyZ(false);
-	mUberShader->SetCubeMapRendering(cubemapSetup);
-	//mUberShader->SetLogarithmicDepth( LogarithmicDepth );
-	mUberShader->SetNumberOfProjectors(0);
+	mMaterialShader->ModifyShaderFlags( Graphics::eShaderFlag_Bindless, true );
+	mMaterialShader->ModifyShaderFlags( Graphics::eShaderFlag_EarlyZ, false );
+	mMaterialShader->ModifyShaderFlags( Graphics::eShaderFlag_CubeMapRendering, cubemapSetup );
 
-	BindUberShader(mUberShader, true, mTextures, mMaterials, mShaders, vec4(0.1f, 0.1f, 0.1f, 0.0f), false);
+	//mUberShader->SetLogarithmicDepth( LogarithmicDepth );
+	//mMaterialShader->SetNumberOfProjectors(0);
+
+	BindUberShader(mMaterialShader, true, mTextures, mMaterials, mShaders, vec4(0.1f, 0.1f, 0.1f, 0.0f), false);
 
 	// DONE: subroutines for blending modes
 	// set subroutine values
@@ -555,14 +558,14 @@ void CGPUCacheModel::PassLighted(const bool cubemapSetup, const bool opaque, con
 		const int numberOfOpaque = mNumberOfOpaque; // mShaders->GetNumberOfOpaqueShaders();
 		const int numberOfTransparency = mNumberOfTransparency; // mShaders->GetNumberOfTransparencyShaders();
 		
-		const Graphics::CustomEffectShaderLocations *locPtr = mUberShader->GetCustomEffectShaderLocationsPtr();
-		mModelRender->BindModelInfoAsUniform( mUberShader->GetVertexProgramId(), locPtr->GetVertexLocation(Graphics::eCustomVertexLocationAllTheModels));
-		mModelRender->BindMeshInfoAsUniform( mUberShader->GetVertexProgramId(), locPtr->GetVertexLocation(Graphics::eCustomVertexLocationAllTheMeshes));
+		auto locPtr = mMaterialShader->GetCurrentEffectLocationsPtr()->vptr();
+		mModelRender->BindModelInfoAsUniform( locPtr->GetShaderId(), locPtr->GetLocation(Graphics::eCustomVertexLocationAllTheModels));
+		mModelRender->BindMeshInfoAsUniform( locPtr->GetShaderId(), locPtr->GetLocation(Graphics::eCustomVertexLocationAllTheMeshes));
 
 		// opaque
 		if (true == opaque && numberOfOpaque > 0)
 		{
-			mUberShader->UpdateAlphaPass(0.0f);
+			mMaterialShader->UpdateAlphaPass(0.0f);
 			mModelRender->RenderOpaque();
 		}
 		
@@ -571,7 +574,7 @@ void CGPUCacheModel::PassLighted(const bool cubemapSetup, const bool opaque, con
 		{
 
 			float alphapass = (float) AlphaPass;
-			mUberShader->UpdateAlphaPass(alphapass);
+			mMaterialShader->UpdateAlphaPass(alphapass);
 			mModelRender->RenderTransparency();
 
 			/*
@@ -616,7 +619,7 @@ void CGPUCacheModel::PassLighted(const bool cubemapSetup, const bool opaque, con
 		mModelRender->RenderEnd();
 	}
 
-	UnBindUberShader(mUberShader, true, mTextures, false);
+	UnBindUberShader(mMaterialShader, true, mTextures, false);
 
 	CHECK_GL_ERROR();
 }
@@ -683,14 +686,14 @@ void CGPUCacheModel::DrawGeometry( const CCameraInfoCache &cameraCache )
 		const int numberOfOpaque = mNumberOfOpaque; // mShaders->GetNumberOfOpaqueShaders();
 		const int numberOfTransparency = mNumberOfTransparency; // mShaders->GetNumberOfTransparencyShaders();
 		
-		const Graphics::CustomEffectShaderLocations *locPtr = mUberShader->GetCustomEffectShaderLocationsPtr();
-		mModelRender->BindModelInfoAsUniform( mUberShader->GetVertexProgramId(), locPtr->GetVertexLocation(Graphics::eCustomVertexLocationAllTheModels));
-		mModelRender->BindMeshInfoAsUniform( mUberShader->GetVertexProgramId(), locPtr->GetVertexLocation(Graphics::eCustomVertexLocationAllTheMeshes) );
+		auto locPtr = mMaterialShader->GetCurrentEffectLocationsPtr()->vptr();
+		mModelRender->BindModelInfoAsUniform( locPtr->GetShaderId(), locPtr->GetLocation(Graphics::eCustomVertexLocationAllTheModels));
+		mModelRender->BindMeshInfoAsUniform( locPtr->GetShaderId(), locPtr->GetLocation(Graphics::eCustomVertexLocationAllTheMeshes) );
 
 		// opaque
 		if (numberOfOpaque > 0)
 		{
-			mUberShader->UpdateAlphaPass(0.0f);
+			mMaterialShader->UpdateAlphaPass(0.0f);
 			mModelRender->RenderOpaque();
 		}
 		
@@ -718,7 +721,7 @@ void CGPUCacheModel::DrawGeometry( const CCameraInfoCache &cameraCache )
 			}
 
 			float alphapass = (float) AlphaPass;
-			mUberShader->UpdateAlphaPass(alphapass);
+			mMaterialShader->UpdateAlphaPass(alphapass);
 			mModelRender->RenderTransparency();
 
 
