@@ -513,7 +513,7 @@ IBLVertexLocations::IBLVertexLocations()
 {
 	SetCapacity( eCustomVertexLocationCount );
 	for (int i=0; i<eCustomVertexLocationCount; ++i)
-		AssignLocationName( i, Projectors_GetVertexLocationName(i) );
+		AssignLocationName( i, IBL_GetVertexLocationName(i) );
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -576,7 +576,7 @@ IBLFragmentLocations::IBLFragmentLocations()
 {
 	SetCapacity( eCustomFragmentLocationCount );
 	for (int i=0; i<eCustomFragmentLocationCount; ++i)
-		AssignLocationName( i, Projectors_GetFragmentLocationName(i) );
+		AssignLocationName( i, IBL_GetFragmentLocationName(i) );
 
 	// register default samplers slots
 
@@ -1505,6 +1505,18 @@ bool IBLShaderFX::OnFindTechnique()
 	}
 
 	return true;
+}
+
+int IBLShaderFX::PrepLocations()
+{
+	int count = 0;
+	for (int i=0; i<eTechCharacterPass_Count; ++i)
+	{
+		count += mCharacterLocations[i].vptr()->Prep();
+		count += mCharacterLocations[i].fptr()->Prep();
+		mCharacterLocations[i].fptr()->PrepDefaultSamplerSlots();
+	}
+	return count;
 }
 
 bool IBLShaderFX::Is( int pTypeId )

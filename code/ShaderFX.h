@@ -557,7 +557,7 @@ namespace Graphics
 		EffectLocations		mCharacterLocations[eTechCharacterPass_Count];
 
 		virtual bool	OnFindTechnique() override;
-		
+		virtual int		PrepLocations() override;
 	public:
 
 		// a constructor
@@ -811,7 +811,8 @@ protected:
 				GLint locMaterial = loc->GetLocation(Graphics::eCustomLocationAllTheMaterials);
 				GLint locShader = loc->GetLocation(Graphics::eCustomLocationAllTheShaders);
 				
-				if (locTexture < 0 || locMaterial < 0 || locShader < 0)
+				// locTexture < 0 - is not used 
+				if (locMaterial < 0 || locShader < 0)
 					throw std::exception( "Failed to locate all common unifroms in IBL shader" );
 
 				CHECK_GL_ERROR();
