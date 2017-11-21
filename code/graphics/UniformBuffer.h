@@ -56,6 +56,10 @@ public:
 		return mBufferCount;
 	}
 
+	const GLuint GetBufferId() const {
+		return mBuffer;
+	}
+
 protected:
 	// SSBO for texture addresses
 	GLuint							mBuffer; // TODO: SSBO or texture buffer pointer
