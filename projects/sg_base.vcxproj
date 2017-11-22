@@ -106,7 +106,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>GLM_FORCE_SSE4;_WIN32;WIN32;_DEBUG;_LIB;TIXML_USE_STL;GLEW_STATIC;NOMINMAX;GLM_FORCE_RADIANS;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN32;WIN32;_DEBUG;_LIB;TIXML_USE_STL;GLEW_STATIC;NOMINMAX;GLM_FORCE_SSE4;GLM_FORCE_RADIANS;_HAS_ITERATOR_DEBUGGING=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -160,6 +160,7 @@
     <ClCompile Include="..\code\graphics\fpTexture.cpp" />
     <ClCompile Include="..\code\graphics\Framebuffer.cpp" />
     <ClCompile Include="..\code\graphics\glewContext.cpp" />
+    <ClCompile Include="..\code\graphics\glslComputeShader.cpp" />
     <ClCompile Include="..\code\graphics\glslShader.cpp" />
     <ClCompile Include="..\code\graphics\OGL_Utils.cpp" />
     <ClCompile Include="..\code\graphics\UniformBuffer.cpp" />
@@ -191,6 +192,7 @@
     <ClInclude Include="..\code\graphics\Framebuffer.h" />
     <ClInclude Include="..\code\graphics\GlBufferObject.h" />
     <ClInclude Include="..\code\graphics\glewContext.h" />
+    <ClInclude Include="..\code\graphics\glslComputeShader.h" />
     <ClInclude Include="..\code\graphics\glslShader.h" />
     <ClInclude Include="..\code\graphics\OGL_Utils.h" />
     <ClInclude Include="..\code\graphics\UniformBuffer.h" />
