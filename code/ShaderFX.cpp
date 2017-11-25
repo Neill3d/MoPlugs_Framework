@@ -33,6 +33,7 @@ namespace Graphics
 	int BaseMaterialShaderFX::TypeInfo = -1;
 	int ProjectorsShaderFX::TypeInfo = MATERIAL_SHADER_PROJECTORS;
 	int IBLShaderFX::TypeInfo = MATERIAL_SHADER_IBL;
+	int LegacyShaderFX::TypeInfo = MATERIAL_SHADER_LEGACY;
 
 	char	gResourcesPath[256];
 
@@ -90,6 +91,24 @@ void includeCallbackFunc(const char *incName, FILE *&fp, const char *&buf)
 ///////////////////////////////////////////////////////////////////////////////////
 //
 
+const char *Legacy_GetVertexLocationName( GLint enumId )
+{
+	switch(enumId)
+	{
+		//
+		// vertex locations
+		
+	case eCustomVertexLocationAllTheShaders:
+		return "allTheShaders";
+	case eCustomVertexLocationAllTheMeshes:
+		return "allTheMeshes";
+	case eCustomVertexLocationAllTheModels:
+		return "allTheModels";
+	}
+
+	return "None";
+}
+
 const char *Projectors_GetVertexLocationName( GLint enumId )
 {
 	switch(enumId)
@@ -128,6 +147,66 @@ const char *IBL_GetVertexLocationName( GLint enumId )
 		return "cornea_bump_amount";
 	case eCustomVertexLocationCorneaBumpRadiusMult:
 		return "cornea_bump_radius_mult";
+	}
+
+	return "None";
+}
+
+const char *Legacy_GetFragmentLocationName( GLint enumId )
+{
+	switch(enumId)
+	{
+		//
+		// fragment locations
+		
+	case eCustomLocationAmbient:
+		return "ambientSampler";
+	case eCustomLocationDiffuse:
+		return "diffuseSampler";
+	case eCustomLocationTransparency:
+		return "transparencySampler";
+	case eCustomLocationSpecularity:
+		return "specularitySampler";
+	case eCustomLocationReflectivity:
+		return "reflectivitySampler";
+	case eCustomLocationNormalMap:
+		return "normalMapSampler";
+	case eCustomLocationCubeMap:
+		return "cubeMapSampler";
+
+		// global scene data needed for shader
+
+	case eCustomLocationAllTheTextures:
+		return "allTheTextures";
+	case eCustomLocationAllTheMaterials:
+		return "allTheMaterials";
+	case eCustomLocationAllTheShaders:
+		return "allTheShaders";
+
+	case eCustomLocationDirLights:
+		return "dirLights";
+	case eCustomLocationLights:
+		return "lights";
+
+	case eCustomLocationShaderDirLights:
+		return "shaderDirLights";
+	case eCustomLocationShaderLights:
+		return "shaderLights";
+
+			// 2d array textures (projections, shadows)
+	case eCustomLocationShadows:
+		return "shadowsSampler";
+	case eCustomLocationLightMatrices:
+		return "lightMatrices";
+
+	case eCustomLocationBackgroundSampler:
+		return "backgroundSampler";
+
+	case eCustomLocationReflCubeSampler:
+		return "reflectionCubeSampler";
+	case eCustomLocationMainDepthSampler:	// used for soft particles
+		return "mainDepthSampler";
+
 	}
 
 	return "None";
@@ -500,6 +579,14 @@ void CustomShaderLocations::Clear()
 //////////////////////////////////////////////////////////////////////
 //
 
+LegacyVertexLocations::LegacyVertexLocations()
+	: CustomShaderLocations()
+{
+	SetCapacity( eCustomVertexLocationCount );
+	for (int i=0; i<eCustomVertexLocationCount; ++i)
+		AssignLocationName( i, Legacy_GetVertexLocationName(i) );
+}
+
 ProjectorsVertexLocations::ProjectorsVertexLocations()
 	: CustomShaderLocations()
 {
@@ -518,6 +605,27 @@ IBLVertexLocations::IBLVertexLocations()
 
 ///////////////////////////////////////////////////////////////////////
 //
+LegacyFragmentLocations::LegacyFragmentLocations()
+	: CustomShaderLocations()
+{
+	SetCapacity( eCustomFragmentLocationCount );
+	for (int i=0; i<eCustomFragmentLocationCount; ++i)
+		AssignLocationName( i, Legacy_GetFragmentLocationName(i) );
+
+	// register default samplers slots
+
+	RegisterDefaultSampler( eCustomLocationMainDepthSampler, 18 );
+	RegisterDefaultSampler( eCustomLocationReflCubeSampler, 17 );
+	RegisterDefaultSampler( eCustomLocationBackgroundSampler, 7 );
+
+	RegisterDefaultSampler( eCustomLocationAmbient, 6 );
+	RegisterDefaultSampler( eCustomLocationDiffuse, 0 );
+	RegisterDefaultSampler( eCustomLocationTransparency, 1 );
+	RegisterDefaultSampler( eCustomLocationSpecularity, 2 );
+	RegisterDefaultSampler( eCustomLocationReflectivity, 3 );
+	RegisterDefaultSampler( eCustomLocationNormalMap, 4 );
+}
+
 ProjectorsFragmentLocations::ProjectorsFragmentLocations()
 	: CustomShaderLocations()
 {
@@ -1336,6 +1444,131 @@ nvFX::IUniform	*BaseMaterialShaderFX::FindUniform(const char *name)
 	return nullptr;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////
+// LegacyShaderFX
+
+LegacyShaderFX::LegacyShaderFX()
+	: BaseMaterialShaderFX()
+{
+	for (int i=0; i<eTechLegacyPass_Count; ++i)
+	{
+		mLegacyLocations[i].reset( new LegacyVertexLocations(), new LegacyFragmentLocations() );
+		mLegacyLogLocations[i].reset( new LegacyVertexLocations(), new LegacyFragmentLocations() );
+	}
+}
+
+LegacyShaderFX::~LegacyShaderFX()
+{
+}
+
+bool LegacyShaderFX::OnFindTechnique()
+{
+	fx_TechMaterialLinear = fx_EffectMaterial->findTechnique("LegacyMaterial");
+	if(fx_TechMaterialLinear && (!fx_TechMaterialLinear->validate()))
+        return false;
+
+	fx_TechMaterialLog = fx_EffectMaterial->findTechnique("LegacyMaterialLog");
+	if(fx_TechMaterialLog && (!fx_TechMaterialLog->validate()))
+        return false;
+
+	/*
+	// TODO: is depricated ?!
+	fx_TechShadow = fx_EffectMaterial->findTechnique("ShadowT");
+	if(fx_TechShadow && (!fx_TechShadow->validate()))
+        return false;
+		*/
+
+	//
+	if (nullptr != fx_TechMaterialLinear)
+	{
+		for (int i=0; i<eTechLegacyPass_Count; ++i)
+		{
+			nvFX::IPass *pPass = fx_TechMaterialLinear->getPass(i);
+			mLegacyLocations[i].vptr()->SetShaderId( BaseShaderFX::nvGetFragmentProgramId( pPass, 0, 0 ) );
+			mLegacyLocations[i].fptr()->SetShaderId( BaseShaderFX::nvGetFragmentProgramId( pPass, 0, 1 ) );
+		}
+	}
+
+	if (nullptr != fx_TechMaterialLog)
+	{
+		for (int i=0; i<eTechLegacyPass_Count; ++i)
+		{
+			nvFX::IPass *pPass = fx_TechMaterialLog->getPass(i);
+			mLegacyLogLocations[i].vptr()->SetShaderId( BaseShaderFX::nvGetFragmentProgramId( pPass, 0, 0 ) );
+			mLegacyLogLocations[i].fptr()->SetShaderId( BaseShaderFX::nvGetFragmentProgramId( pPass, 0, 1 ) );
+		}
+	}
+
+	// TODO: is depricated ?!
+	/*
+	if (nullptr != fx_TechShadow)
+	{
+		nvFX::IPass *pPass = fx_TechShadow->getPass(0);
+		mShadowLoc.SetShadersId( ShaderBase::nvGetFragmentProgramId( pPass, 0, 0 ),
+											ShaderBase::nvGetFragmentProgramId( pPass, 0, 2 ) );
+	}
+	*/
+
+	return true;
+}
+
+
+int LegacyShaderFX::PrepLocations()
+{
+	int count = 0;
+	for (int i=0; i<eTechLegacyPass_Count; ++i)
+	{
+		count += mLegacyLocations[i].vptr()->Prep();
+		count += mLegacyLocations[i].fptr()->Prep();
+		mLegacyLocations[i].fptr()->PrepDefaultSamplerSlots();
+
+		count += mLegacyLogLocations[i].vptr()->Prep();
+		count += mLegacyLogLocations[i].fptr()->Prep();
+		mLegacyLogLocations[i].fptr()->PrepDefaultSamplerSlots();
+	}
+	return count;
+}
+
+
+bool LegacyShaderFX::Is( int pTypeId )
+{
+	return (pTypeId==TypeInfo) ? true : BaseMaterialShaderFX::Is( pTypeId );
+}
+
+
+void LegacyShaderFX::PrepTechAndPass()
+{
+	int currentPassId = eTechLegacyPass_EarlyZNoTextures;
+	
+	if ( false == HasShaderFlag(eShaderFlag_EarlyZ) )
+	{
+		currentPassId = eTechLegacyPass_BindedTextures;
+
+		if ( true == HasShaderFlag(eShaderFlag_NoTextures) )
+			currentPassId = eTechLegacyPass_NoTextures;
+	}
+	else
+	{
+		currentPassId = eTechLegacyPass_BindedEarlyZ;
+
+		if ( true == HasShaderFlag(eShaderFlag_NoTextures) )
+			currentPassId = eTechLegacyPass_EarlyZNoTextures;
+	}
+	
+	//
+	if ( true == HasShaderFlag(eShaderFlag_LogDepth) )
+	{
+		mCurrentLoc = &mLegacyLogLocations[currentPassId];
+		fx_pass = fx_TechMaterialLog->getPass(currentPassId);
+	}
+	else
+	{
+		mCurrentLoc = &mLegacyLocations[currentPassId];
+		fx_pass = fx_TechMaterialLinear->getPass(currentPassId);
+	}
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////
 // ProjectorsShaderFX
 
@@ -1365,11 +1598,12 @@ bool ProjectorsShaderFX::OnFindTechnique()
 	fx_TechMaterialLog = fx_EffectMaterial->findTechnique("WallMaterialLog");
 	if(fx_TechMaterialLog && (!fx_TechMaterialLog->validate()))
         return false;
-
+	
+	// TODO: is depricated ?!
 	fx_TechShadow = fx_EffectMaterial->findTechnique("ShadowT");
 	if(fx_TechShadow && (!fx_TechShadow->validate()))
         return false;
-
+		
 	fx_numberOfProjectors = fx_EffectMaterial->findUniform("numProjectors");
 
 	//

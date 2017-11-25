@@ -470,6 +470,54 @@ namespace Graphics
 	};
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// mobu legacy phong shading support
+
+	struct LegacyVertexLocations : public CustomShaderLocations
+	{
+	public:
+		// a constructor
+		LegacyVertexLocations();
+	};
+
+	struct LegacyFragmentLocations : public CustomShaderLocations
+	{
+	public:
+		// a constructor
+		LegacyFragmentLocations();
+	};
+
+	class LegacyShaderFX : public BaseMaterialShaderFX
+	{
+	protected:
+
+		EffectLocations					mLegacyLocations[eTechLegacyPass_Count];
+		EffectLocations					mLegacyLogLocations[eTechLegacyPass_Count];
+
+		// TODO: depricated ?!
+		nvFX::ITechnique	*fx_TechShadow;
+		nvFX::ITechnique	*fx_TechCulling;
+		nvFX::ITechnique	*fx_TechNormals;
+		nvFX::ITechnique	*fx_TechNormalsLog;		
+		nvFX::ITechnique	*fx_TechSimple;
+
+		virtual bool	OnFindTechnique() override;
+
+		virtual int		PrepLocations() override;
+		
+	public:
+
+		//! a constructor
+		LegacyShaderFX();
+		// a destructor
+		virtual ~LegacyShaderFX();
+
+		static int TypeInfo;
+		virtual bool Is( int typeInfo ) override;
+
+		virtual void	PrepTechAndPass() override;
+	};
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// phong, toon, color correction, up to 6 projected textures
 
 	struct ProjectorsVertexLocations : public CustomShaderLocations
@@ -676,6 +724,7 @@ public:
 	bool LoadShaders()
 	{
 		bool lSuccess = true;
+		lSuccess |= LoadLegacyShaderFX();
 		lSuccess |= LoadProjectorsShaderFX();
 		lSuccess |= LoadIBLShaderFX();
 			
@@ -729,6 +778,56 @@ protected:
 	bool										mLogDepth;
 	//bool										mNeedUpdateFlags[MATERIAL_SHADER_COUNT];
 	MaterialShader								mMaterialShaders[MATERIAL_SHADER_COUNT];
+
+	bool LoadLegacyShaderFX()
+	{
+		MaterialShader &materialshader = mMaterialShaders[MATERIAL_SHADER_LEGACY];
+		bool lSuccess = true; // materialshader.IsOk();
+
+		if ( true == materialshader.IsUpdateNeeded() 
+			&& false == materialshader.IsOk() )
+		{
+			// try to load
+			Graphics::LegacyShaderFX	*pEffects = nullptr;
+
+			try
+			{
+				if ( 0 == mEffectPath.size() )
+					throw std::exception( "effect path is not assigned!" );
+
+				pEffects =  new Graphics::LegacyShaderFX();
+				if( !pEffects->Initialize( mEffectPath.c_str(), LEGACYSHADER_EFFECT, 512, 512, 1.0) )
+					throw std::exception( "Failed to initialize a Legacy shader!\n" );
+				
+				// do a test locations query
+				pEffects->ModifyShaderFlags( Graphics::eShaderFlag_Bindless, false );
+				pEffects->ModifyShaderFlags( Graphics::eShaderFlag_CubeMapRendering, false );
+				pEffects->PrepTechAndPass();
+
+				const auto loc = pEffects->GetCurrentEffectLocationsPtr()->fptr();
+				GLint locTexture = loc->GetLocation(Graphics::eCustomLocationAllTheTextures);
+				GLint locMaterial = loc->GetLocation(Graphics::eCustomLocationAllTheMaterials);
+				GLint locShader = loc->GetLocation(Graphics::eCustomLocationAllTheShaders);
+				
+				if ( locTexture < 0 || locMaterial < 0 || locShader < 0 )
+					throw std::exception( "Failed to locate all common unifroms in legacy shader" );
+
+				CHECK_GL_ERROR();
+
+				//mLastContext = wglGetCurrentContext();
+				materialshader.Reset(pEffects);
+				lSuccess = true;
+			}
+			catch (const std::exception &e )
+			{
+				printf( "[Graphics ERROR]: %s\n", e.what() );
+				materialshader.ModifyUpdateFlag(false);
+				FREEANDNIL(pEffects);
+				lSuccess = false;
+			}
+		}
+		return lSuccess;
+	}
 
 	bool LoadProjectorsShaderFX()
 	{

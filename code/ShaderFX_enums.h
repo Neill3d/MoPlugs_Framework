@@ -6,11 +6,13 @@ namespace Graphics
 
 	#define PROJSHADER_EFFECT			"ProjectiveMapping.glslfx"
 	#define IBLSHADER_EFFECT			"IBL.glslfx"
+	#define LEGACYSHADER_EFFECT			"LegacyShading.glslfx"
 
 	enum
 	{
 		MATERIAL_SHADER_PROJECTORS,
 		MATERIAL_SHADER_IBL,
+		MATERIAL_SHADER_LEGACY,	// simple support for a standard phong lighting model
 		MATERIAL_SHADER_COUNT
 	};
 
@@ -47,6 +49,15 @@ namespace Graphics
 			eTechCharacterPass_Eye,
 			eTechCharacterPass_Skin,
 			eTechCharacterPass_Count
+		};
+
+		enum ETechLegacyPasses
+		{
+			eTechLegacyPass_EarlyZNoTextures,
+			eTechLegacyPass_BindedEarlyZ,
+			eTechLegacyPass_NoTextures,
+			eTechLegacyPass_BindedTextures,
+			eTechLegacyPass_Count
 		};
 
 	enum EEffectDepthHint
