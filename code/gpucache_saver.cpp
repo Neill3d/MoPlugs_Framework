@@ -227,8 +227,15 @@ bool CGPUCacheSaver::SaveTextures(const char *filename, CGPUCacheSaverQuery *pQu
 					throw std::exception("Failed to save DDS data - ");
 	
 			}
+			else if (nullptr != szFilename)
+			{
+				if (false == SaveImageSimple( fh, i ) )
+					throw std::exception("Failed to save simple image data - ");
+			}
 			else
 			{
+				
+
 				// write empty texture
 				if (false == SaveImageEmpty( fh ) )
 					throw std::exception("Failed to save empty image data - ");
@@ -400,6 +407,7 @@ bool CGPUCacheSaver::WriteTexturesToXML( TiXmlElement *parentItem )
 	parentItem->SetAttribute( "count", numberOfSamplers );
 
 	//
+	GLint internalFormat, format;
 	double totalUncompressedSize = 0.0;
 	for (int i=0; i<numberOfSamplers; ++i)
 	{
@@ -413,7 +421,7 @@ bool CGPUCacheSaver::WriteTexturesToXML( TiXmlElement *parentItem )
 			texItem.SetAttribute( "width", mQuery->GetVideoWidth(videoId) );
 			texItem.SetAttribute( "height", mQuery->GetVideoHeight(videoId) );
 			texItem.SetAttribute( "filename", mQuery->GetVideoFilename(videoId) );
-			texItem.SetAttribute( "format", mQuery->GetVideoFormat(videoId) );
+			texItem.SetAttribute( "format", mQuery->GetVideoFormat(videoId, internalFormat, format) );
 			texItem.SetAttribute( "startFrame", mQuery->GetVideoStartFrame(videoId) );
 			texItem.SetAttribute( "stopFrame", mQuery->GetVideoStopFrame(videoId) );
 			texItem.SetAttribute( "frameRate", mQuery->GetVideoFrameRate(videoId) );
@@ -483,20 +491,84 @@ bool CGPUCacheSaver::SaveImageEmpty( int fh )
 }
 
 
+bool CGPUCacheSaver::SaveImageSimple( int fh, const int index )
+{
+	//
+	auto fn_writeSafe = [] (const int fh, const void *data, const int size) {
 
-bool CGPUCacheSaver::WriteModelToXML( const int index, TiXmlElement *models )
+		if (size != _write(fh, data, size ) )
+			throw std::exception( "error while writing data!\n" );
+
+	};
+
+	int numberOfFrames = 0;
+	int imageSize=mQuery->GetVideoSize(index);
+
+	ImageHeader2			header;
+	ImageSequenceHeader2	seqHeader;
+
+	__int64 pos = _telli64(fh);
+	printf( "current file position - %u\n", pos );
+	printf( "writing image - size %d\n", imageSize );
+
+	BYTE imageType = IMAGE_TYPE_STILL;
+
+	try
+	{
+		imageType = IMAGE_TYPE_STILL;
+
+		const GLubyte	*imageData = mQuery->GetVideoData(index);
+
+		fn_writeSafe( fh, &imageType, sizeof(BYTE) );
+			
+		if (imageData == nullptr)
+		{
+			header.width = 0;
+			header.height = 0;
+			header.size = 0;
+			header.numberOfLODs = 0;
+		}
+		else
+		{
+			GLint internalFormat, format;
+			mQuery->GetVideoFormat( index, internalFormat, format );
+			
+			ImageHeader2::Set(mQuery->GetVideoWidth(index), mQuery->GetVideoHeight(index),
+				internalFormat, format, mQuery->GetVideoSize(index), 0, 1, header );
+		}
+
+			
+		fn_writeSafe( fh, &header, sizeof(header) );
+
+		// OpenGL texture limitation
+		if (imageData != nullptr)
+			fn_writeSafe( fh, imageData, sizeof(BYTE) * header.size );
+			
+	}
+	catch (std::exception &e)
+	{
+		printf( "%s\n", e.what() );
+		return false;
+	}
+
+	return true;
+}
+
+bool CGPUCacheSaver::WriteModelToXML( const int modelIndex, TiXmlElement *models )
 {
 	TiXmlElement modelItem("Model");
-	modelItem.SetAttribute( "name", mQuery->GetModelName(index) );
-	modelItem.SetAttribute( "visible", mQuery->GetModelVisible(index) );
-	modelItem.SetAttribute( "castShadow", mQuery->GetModelCastsShadows(index) );
-	modelItem.SetAttribute( "receiveShadow", mQuery->GetModelReceiveShadows(index) );
+	modelItem.SetAttribute( "name", mQuery->GetModelName(modelIndex) );
+	modelItem.SetAttribute( "visible", mQuery->GetModelVisible(modelIndex) );
+	modelItem.SetAttribute( "castShadow", mQuery->GetModelCastsShadows(modelIndex) );
+	modelItem.SetAttribute( "receiveShadow", mQuery->GetModelReceiveShadows(modelIndex) );
 
 	vec4 t, r, s, vmin, vmax;
 
-	mQuery->GetModelTranslation(index, t);
-	mQuery->GetModelRotation(index, r);
-	mQuery->GetModelScaling(index, s);
+	mQuery->GetModelTranslation(modelIndex, t);
+	mQuery->GetModelRotation(modelIndex, r);
+	mQuery->GetModelScaling(modelIndex, s);
+
+	// ?! this is not for model, this one returns a global one
 	mQuery->GetBoundingBox(vmin, vmax);
 
 	TiXmlElement tItem( "Translation" );
@@ -533,29 +605,29 @@ bool CGPUCacheSaver::WriteModelToXML( const int index, TiXmlElement *models )
 	TiXmlElement patches( "Patches" );
 
 	
-	const int subpatchcount = mQuery->GetModelSubPatchCount(index);
+	const int subpatchcount = mQuery->GetModelSubPatchCount(modelIndex);
 	for (int j=0; j<subpatchcount; ++j)
 	{
 		int offset, size, materialId;
-		mQuery->GetModelSubPatchInfo(index, j, offset, size, materialId); 
+		mQuery->GetModelSubPatchInfo(modelIndex, j, offset, size, materialId); 
 
 		TiXmlElement patchItem( "Patch" );
 		patchItem.SetAttribute( "offset", offset );
 		patchItem.SetAttribute( "size", size );
 		patchItem.SetAttribute( "material", (materialId >= 0) ? mQuery->GetMaterialName(materialId) : "None" );
-		patchItem.SetAttribute( "materialId", index );
+		patchItem.SetAttribute( "materialId", materialId );
 
 		patches.InsertEndChild( patchItem );
 	}
-	modelItem.SetAttribute( "vertices", mQuery->GetModelVertexCount(index) );
+	modelItem.SetAttribute( "vertices", mQuery->GetModelVertexCount(modelIndex) );
 	modelItem.InsertEndChild( patches );
 
 	// store shaders
 	TiXmlElement shaders( "Shaders" );
-	const int numberOfShaders = mQuery->GetModelShadersCount(index);
+	const int numberOfShaders = mQuery->GetModelShadersCount(modelIndex);
 	for (int j=0; j<numberOfShaders; ++j)
 	{
-		const int shaderId = mQuery->GetModelShaderId(index, j);
+		const int shaderId = mQuery->GetModelShaderId(modelIndex, j);
 
 		TiXmlElement shaderItem( "Shader" );
 		shaderItem.SetAttribute( "name", mQuery->GetShaderName(shaderId) );

@@ -67,7 +67,7 @@ public:
 	virtual const char *GetVideoName(const int index) = 0;
 	virtual const int GetVideoWidth(const int index) = 0;
 	virtual const int GetVideoHeight(const int index) = 0;
-	virtual const int GetVideoFormat(const int index) = 0;
+	virtual const int GetVideoFormat(const int index, GLint &internalFormat, GLint &format) = 0;
 	virtual const bool IsVideoImageSequence(const int index) = 0;
 	virtual const int GetVideoStartFrame(const int index) = 0;
 	virtual const int GetVideoStopFrame(const int index) = 0;
@@ -75,6 +75,7 @@ public:
 	virtual const char *GetVideoFilename(const int index) = 0;
 	virtual const double GetVideoSize(const int index) = 0;
 	virtual const bool IsVideoUsedMipmaps(const int index) = 0;
+	virtual const unsigned char *GetVideoData(const int index) = 0;
 
 	// information about media
 	virtual double GetTotalUncompressedSize()
@@ -194,4 +195,6 @@ protected:
 	bool SaveSampler( int fh, const int index, const int videoIndex );
 	// index in video clips array
 	bool SaveImageEmpty( int fh );
+
+	bool SaveImageSimple( int fh, const int index );
 };

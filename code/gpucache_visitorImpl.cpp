@@ -266,6 +266,12 @@ void CGPUCacheLoaderVisitorImpl::OnReadTexturesImage2(const BYTE type, const Ima
 				stream += lodHeader->size;
 			}
 
+			// auto generate mipmaps if missing
+			if (header->numberOfLODs <= 1)
+			{
+				glGenerateMipmap(GL_TEXTURE_2D);
+			}
+
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 		else
@@ -300,6 +306,13 @@ void CGPUCacheLoaderVisitorImpl::OnReadTexturesImage2(const BYTE type, const Ima
 			}
 			gCountLock += 1;
 #endif
+
+			// auto generate mipmaps if missing
+			if (header->numberOfLODs <= 1)
+			{
+				glGenerateMipmap(GL_TEXTURE_2D);
+			}
+
 			glBindTexture(GL_TEXTURE_2D, 0);
 
 			auto handle = glGetTextureHandleARB(texId);
