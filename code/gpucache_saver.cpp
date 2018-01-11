@@ -569,7 +569,7 @@ bool CGPUCacheSaver::WriteModelToXML( const int modelIndex, TiXmlElement *models
 	mQuery->GetModelScaling(modelIndex, s);
 
 	// ?! this is not for model, this one returns a global one
-	mQuery->GetBoundingBox(vmin, vmax);
+	mQuery->GetModelBoundingBox(modelIndex, vmin, vmax);
 
 	TiXmlElement tItem( "Translation" );
 	tItem.SetDoubleAttribute( "x", t[0] );
