@@ -188,6 +188,7 @@
 #include <assert.h>
 #include "nv_dds.h"
 
+
 using namespace std;
 using namespace nv_dds;
 
@@ -205,6 +206,11 @@ inline GLenum comps2internalfmt(int i)
         return GL_RGBA8;
     }
     return 0;
+}
+
+unsigned int max(unsigned int a, unsigned int b)
+{
+	return (a > b) ? a : b;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

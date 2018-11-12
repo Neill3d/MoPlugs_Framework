@@ -1078,7 +1078,7 @@ BaseMaterialShaderFX::BaseMaterialShaderFX()
 	//fx_shaderMask = nullptr;
 
 	fx_softParticles = nullptr;
-
+	fx_matCapRotation = nullptr;
 	//fx_rimOptions = nullptr;
 	//fx_rimColor = nullptr;
 
@@ -1302,6 +1302,21 @@ void BaseMaterialShaderFX::UpdateSoftParticles(const float value )
 	}
 }
 
+void BaseMaterialShaderFX::SetMatCapRotation(const float value)
+{
+	if (fx_matCapRotation)
+	{
+		fx_matCapRotation->setValue1f( value );
+	}
+}
+
+void BaseMaterialShaderFX::UpdateMatCapRotation(const float value )
+{
+	if (fx_matCapRotation && fx_pass)
+	{
+		fx_matCapRotation->updateValue1f( value, fx_pass );
+	}
+}
 
 //-----------------------------------------------------------------------------
 // scene instances, depending on the scene level needs
@@ -1416,6 +1431,7 @@ bool BaseMaterialShaderFX::InitializeEffectParams()
 	fx_textureOffset = fx_EffectMaterial->findUniform("textureOffset");
 	fx_textureScaling = fx_EffectMaterial->findUniform("textureScaling");
 	fx_softParticles = fx_EffectMaterial->findUniform("softParticles");
+	fx_matCapRotation = fx_EffectMaterial->findUniform("matCapRotation");
 	//fx_shaderMask = fx_EffectMaterial->findUniform("shaderMask");
 
 	//fx_rimOptions = fx_EffectMaterial->findUniform("gRimOptions" );

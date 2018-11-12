@@ -672,7 +672,10 @@ bool CGPUCacheSaver::WriteModelGeometry( FILE *modelFile, const int index )
 		int offset, size, matId;
 		mQuery->GetModelSubPatchInfo( index, i, offset, size, matId );
 		
-		numberOfIndices = std::max( numberOfIndices, offset+size );
+#ifndef max
+#define max(a,b) (a>b)?a:b
+#endif
+		numberOfIndices = max( numberOfIndices, offset+size );
 	}
 
 	// we have strong specified strides for arrays

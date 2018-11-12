@@ -322,6 +322,7 @@ namespace Graphics
 		nvFX::IUniform		*fx_textureScaling;
 
 		nvFX::IUniform		*fx_softParticles;
+		nvFX::IUniform		*fx_matCapRotation;
 
 		//nvFX::IUniform		*fx_rimOptions;
 		//nvFX::IUniform		*fx_rimColor;
@@ -426,6 +427,9 @@ namespace Graphics
 
 		void	SetSoftParticles( const float value );
 		void	UpdateSoftParticles( const float value );
+
+		void	SetMatCapRotation( const float value );
+		void	UpdateMatCapRotation( const float value );
 
 		//void	SetRimParameters( const double useRim, const double rimPower, const bool useRimTexture, const vec4 &rimColor );
 		//void	UpdateRimParameters( const double useRim, const double rimPower, const bool useRimTexture, const vec4 &rimColor );
