@@ -12,7 +12,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-#include "gpucache_visitorImpl.h"
+#include "gpucacheloadervisitorImpl.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>

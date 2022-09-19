@@ -12,7 +12,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-#include "gpucache_saver.h"
+#include "gpucachesaver.h"
+#include "gpucachesaverquery.h"
 
 #include <io.h>
 #include <fcntl.h>

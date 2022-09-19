@@ -28,27 +28,27 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v100</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -154,11 +154,11 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\code\gpucache_loader.cpp" />
-    <ClCompile Include="..\code\gpucache_model.cpp" />
-    <ClCompile Include="..\code\gpucache_saver.cpp" />
-    <ClCompile Include="..\code\gpucache_saverImpl.cpp" />
-    <ClCompile Include="..\code\gpucache_visitorImpl.cpp" />
+    <ClCompile Include="..\code\gpucacheloader.cpp" />
+    <ClCompile Include="..\code\gpucachemodel.cpp" />
+    <ClCompile Include="..\code\gpucachesaver.cpp" />
+    <ClCompile Include="..\code\gpucachesaverqueryimpl.cpp" />
+    <ClCompile Include="..\code\gpucacheloadervisitorimpl.cpp" />
     <ClCompile Include="..\code\ShaderFX.cpp" />
     <ClCompile Include="..\code\shared_camera.cpp" />
     <ClCompile Include="..\code\shared_glsl.cpp" />
@@ -172,12 +172,13 @@
     <ClCompile Include="..\code\utils_shaders.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\code\gpucache_loader.h" />
-    <ClInclude Include="..\code\gpucache_model.h" />
-    <ClInclude Include="..\code\gpucache_saver.h" />
-    <ClInclude Include="..\code\gpucache_saverImpl.h" />
-    <ClInclude Include="..\code\gpucache_types.h" />
-    <ClInclude Include="..\code\gpucache_visitorImpl.h" />
+    <ClInclude Include="..\code\gpucacheloader.h" />
+    <ClInclude Include="..\code\gpucachemodel.h" />
+    <ClInclude Include="..\code\gpucachesaver.h" />
+    <ClInclude Include="..\code\gpucachesaverquery.h" />
+    <ClInclude Include="..\code\gpucachesaverqueryimpl.h" />
+    <ClInclude Include="..\code\gpucachetypes.h" />
+    <ClInclude Include="..\code\gpucacheloadervisitorimpl.h" />
     <ClInclude Include="..\code\ShaderFX.h" />
     <ClInclude Include="..\code\ShaderFX_enums.h" />
     <ClInclude Include="..\code\shared_camera.h" />
@@ -191,6 +192,7 @@
     <ClInclude Include="..\code\shared_shaders.h" />
     <ClInclude Include="..\code\shared_textures.h" />
     <ClInclude Include="..\code\utils_shaders.h" />
+    <ClInclude Include="gpucacheloadervisitor.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="sg_base.vcxproj">

@@ -12,7 +12,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-#include "gpucache_model.h"
+#include "gpucachemodel.h"
 
 #ifdef _DEBUG
 	extern void DebugOGL_Callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char *message, const void*userParam);

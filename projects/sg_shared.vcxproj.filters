@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="GPU Cache">
+      <UniqueIdentifier>{6ad5100a-a50c-41b3-b3af-bb3caf7a546b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -30,12 +33,6 @@
     <ClCompile Include="..\code\shared_textures.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\code\gpucache_loader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\gpucache_saver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\code\shared_models.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -43,12 +40,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\code\shared_camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\gpucache_model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\code\gpucache_saverImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\code\shared_lights.cpp">
@@ -60,11 +51,23 @@
     <ClCompile Include="..\code\shared_projectors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\code\gpucache_visitorImpl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\code\ShaderFX.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\gpucacheloader.cpp">
+      <Filter>GPU Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\gpucachemodel.cpp">
+      <Filter>GPU Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\gpucachesaver.cpp">
+      <Filter>GPU Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\gpucachesaverqueryimpl.cpp">
+      <Filter>GPU Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="..\code\gpucacheloadervisitorimpl.cpp">
+      <Filter>GPU Cache</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,19 +86,10 @@
     <ClInclude Include="..\code\utils_shaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\code\gpucache_types.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\gpucache_saver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\code\shared_models.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\code\shared_misc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\gpucache_model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\code\shared_camera.h">
@@ -104,19 +98,10 @@
     <ClInclude Include="..\code\shared_rendering.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\code\gpucache_saverImpl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\code\shared_lights.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\code\gpucache_loader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\code\shared_projectors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\code\gpucache_visitorImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\code\ShaderFX.h">
@@ -124,6 +109,30 @@
     </ClInclude>
     <ClInclude Include="..\code\ShaderFX_enums.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gpucacheloadervisitor.h">
+      <Filter>GPU Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\gpucacheloader.h">
+      <Filter>GPU Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\gpucachemodel.h">
+      <Filter>GPU Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\gpucachesaver.h">
+      <Filter>GPU Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\gpucachesaverqueryimpl.h">
+      <Filter>GPU Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\gpucachetypes.h">
+      <Filter>GPU Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\gpucacheloadervisitorimpl.h">
+      <Filter>GPU Cache</Filter>
+    </ClInclude>
+    <ClInclude Include="..\code\gpucachesaverquery.h">
+      <Filter>GPU Cache</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

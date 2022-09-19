@@ -14,15 +14,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-#include "gpucache_saver.h"
-#include "gpucache_model.h"
+#include "gpucachesaverquery.h"
+#include "gpucachemodel.h"
 
 //////////////////////////////////////////////////////////////////////////
 // class for saving data from gpu cache model
 
 class CGPUCacheSaverQueryImpl : public CGPUCacheSaverQuery
 {
-
 public:
 
 	//! a constructor
